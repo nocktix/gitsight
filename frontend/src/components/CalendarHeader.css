@@ -1,0 +1,22 @@
+.calendar-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.calendar-header__line {
+  display: grid;
+  column-gap: var(--gap);
+}
+
+.calendar-header__date,
+.calendar-header__weekday {
+  font-size: 10px;
+  line-height: 14px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.calendar-header__weekday {
+  text-align: center;
+}

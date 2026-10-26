@@ -1,0 +1,31 @@
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.summary-cards__card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--color-surface-muted);
+}
+
+.summary-cards__label {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.summary-cards__value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.summary-cards__value--late {
+  color: var(--color-late-commit-text);
+}

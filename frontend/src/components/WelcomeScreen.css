@@ -1,0 +1,97 @@
+.welcome__main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 24px 24px;
+}
+
+.welcome__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.welcome__card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 560px;
+  padding: 28px 32px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+}
+
+.welcome__title {
+  margin: 0;
+  font-size: 1.4rem;
+  color: var(--color-heading);
+}
+
+.welcome__instruction {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--color-text-muted);
+}
+
+.welcome__input {
+  padding: 10px 12px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.88rem;
+}
+
+.welcome__input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.welcome__button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.welcome__button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.welcome__error {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--color-alert-text);
+}
+
+.welcome__loading {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.welcome__privacy {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.welcome__steps {
+  margin: 16px 0 0;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+/* Hover de los botones principales. */
+.welcome__button:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}

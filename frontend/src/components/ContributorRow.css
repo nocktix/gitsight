@@ -1,0 +1,58 @@
+.contributor-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.contributor-row__info {
+  display: flex;
+  flex: 0 0 120px;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.contributor-row__name {
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.contributor-row__name--dimmed {
+  color: var(--color-text-muted);
+}
+
+.contributor-row__stats {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.contributor-row__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.contributor-row__empty {
+  margin: 0;
+  padding: 18px 0;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
+/* Fila del grupo completo: negrita, estadísticas en dos líneas (\n) y separador con los integrantes. */
+.contributor-row--group {
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.contributor-row--group .contributor-row__name {
+  font-weight: 700;
+}
+
+.contributor-row--group .contributor-row__stats {
+  white-space: pre-line;
+}

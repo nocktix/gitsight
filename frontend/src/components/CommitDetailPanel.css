@@ -1,0 +1,116 @@
+.commit-detail-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-overlay);
+  z-index: 100;
+  display: flex;
+  justify-content: flex-end;
+  animation: fade-in var(--motion-base) var(--motion-ease);
+}
+
+.commit-detail-overlay--closing {
+  animation: fade-out var(--motion-base) var(--motion-ease) forwards;
+}
+
+.commit-detail-panel {
+  position: relative;
+  width: 50vw;
+  min-width: 420px;
+  max-width: 900px;
+  height: 100vh;
+  background: var(--color-surface);
+  box-shadow: -8px 0 24px var(--color-shadow);
+  box-sizing: border-box;
+  overflow: hidden;
+  animation: commit-detail-panel-slide-in var(--motion-base) var(--motion-ease);
+}
+
+.commit-detail-overlay--closing .commit-detail-panel {
+  animation: slide-out-right var(--motion-base) var(--motion-ease) forwards;
+}
+
+.commit-detail-panel__scroll {
+  height: 100%;
+  overflow-y: auto;
+  padding: 24px 28px;
+  box-sizing: border-box;
+}
+
+@keyframes commit-detail-panel-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.commit-detail-panel__close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  border: none;
+  background: var(--color-surface-hover);
+  color: var(--color-text);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 0.9rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.commit-detail-panel__close:hover {
+  background: var(--color-border);
+}
+
+.commit-detail-panel__header {
+  padding-right: 44px;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+
+.commit-detail-panel__hash {
+  display: inline-block;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.8rem;
+  color: var(--color-info-text);
+  background: var(--color-info-bg);
+  padding: 2px 8px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.commit-detail-panel__title {
+  margin: 0 0 6px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.commit-detail-panel__meta {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
+.commit-detail-panel__loading,
+.commit-detail-panel__error {
+  font-size: 0.9rem;
+  margin-top: 40px;
+}
+
+.commit-detail-panel__loading {
+  color: var(--color-text-muted);
+}
+
+.commit-detail-panel__error {
+  color: var(--color-alert-text);
+}
+
+.commit-detail-panel__files {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}

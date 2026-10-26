@@ -1,0 +1,106 @@
+.llm-settings__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: var(--color-overlay);
+}
+
+.llm-settings {
+  width: 100%;
+  max-width: 460px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 20px 24px;
+  border-radius: 8px;
+  background: var(--color-surface);
+  box-shadow: 0 8px 32px var(--color-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.llm-settings__title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.llm-settings__hint {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.llm-settings__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--color-text);
+}
+
+.llm-settings__field a {
+  font-size: 0.8rem;
+}
+
+.llm-settings__key {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.llm-settings__key code {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 6px;
+  background: var(--color-surface);
+}
+
+.llm-settings__test {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.llm-settings__test p {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.llm-settings__ok {
+  color: var(--color-success-text);
+}
+
+.llm-settings__error {
+  color: var(--color-alert-text);
+}
+
+.llm-settings__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.llm-settings__actions button.llm-settings__primary {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-weight: 600;
+}
+
+.llm-settings__backdrop {
+  animation: fade-in var(--motion-fast) var(--motion-ease);
+}
+
+/* Hover de los botones principales. */
+.llm-settings__actions button.llm-settings__primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}

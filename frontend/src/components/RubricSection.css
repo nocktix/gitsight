@@ -1,0 +1,234 @@
+.rubric-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface-muted);
+  font-size: 0.85rem;
+}
+
+.rubric-section__active {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rubric-section__summary {
+  flex: 1;
+  min-width: 200px;
+  color: var(--color-text);
+}
+
+.rubric-section__note {
+  color: var(--color-text-muted);
+}
+
+.rubric-section__badge {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.rubric-section__toggle {
+  align-self: flex-start;
+}
+
+.rubric-section__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: fade-in-up var(--motion-base) var(--motion-ease);
+}
+
+.rubric-section__hint {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.rubric-section__versions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rubric-section__row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 6px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface);
+}
+
+.rubric-section__row-text {
+  flex: 1;
+  min-width: 200px;
+  color: var(--color-text);
+}
+
+.rubric-section__confirm {
+  flex-basis: 100%;
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: var(--color-discrepancy-bg-soft);
+  color: var(--color-discrepancy-text);
+}
+
+.rubric-section__compare {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rubric-section__error {
+  margin: 0;
+  color: var(--color-alert-text);
+}
+
+.rubric-dialog__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: var(--color-overlay);
+  animation: fade-in var(--motion-fast) var(--motion-ease);
+}
+
+.rubric-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 640px;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 16px 20px;
+  border-radius: 8px;
+  background: var(--color-surface);
+  box-shadow: 0 8px 32px var(--color-shadow);
+}
+
+.rubric-dialog--wide {
+  max-width: 1000px;
+}
+
+.rubric-dialog__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rubric-dialog__title {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--color-heading);
+}
+
+.rubric-dialog__meta {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.rubric-dialog__text {
+  margin: 0;
+  max-height: 50vh;
+  overflow: auto;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.78rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: var(--color-text);
+}
+
+.rubric-dialog__columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.rubric-dialog__column {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.rubric-dialog__column-title {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
+
+.rubric-diff {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rubric-diff__summary {
+  margin: 0;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.rubric-diff__item {
+  margin: 0;
+  padding: 6px 10px;
+  border-left: 3px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.rubric-diff__item p {
+  margin: 0;
+}
+
+.rubric-diff__item--added {
+  border-left-color: var(--color-diff-added-border);
+  background: var(--color-diff-added-bg);
+}
+
+.rubric-diff__item--removed {
+  border-left-color: var(--color-diff-removed-border);
+  background: var(--color-diff-removed-bg);
+}
+
+.rubric-diff__item--modified {
+  border-left-color: var(--color-sand-strong);
+  background: var(--color-discrepancy-bg-soft);
+}
+
+.rubric-diff__pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+@media (max-width: 700px) {
+  .rubric-dialog__columns,
+  .rubric-diff__pair {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "primary": "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "models": [
+    {"id": "nvidia/nemotron-3-ultra-550b-a55b:free", "name": "NVIDIA Nemotron 3 Ultra", "free": true},
+    {"id": "meta-llama/llama-4-maverick:free", "name": "Llama 4 Maverick", "free": true},
+    {"id": "openrouter/free", "name": "OpenRouter Free (router)", "free": true}
+  ]
+}

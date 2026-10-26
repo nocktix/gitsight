@@ -1,0 +1,154 @@
+.triangulation-panel {
+  margin: 16px 24px;
+  padding: 16px 20px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+}
+
+.triangulation-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.triangulation-panel__title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.triangulation-panel__badge {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--color-surface-hover);
+  color: var(--color-text);
+}
+
+.triangulation-panel__subtitle {
+  margin: 4px 0 16px;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.triangulation-panel__loading {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.triangulation-panel__error {
+  color: var(--color-alert-text);
+  font-size: 0.9rem;
+}
+
+.triangulation-panel__findings {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.triangulation-panel__summary {
+  margin: 16px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--color-text);
+  white-space: pre-wrap;
+}
+
+.triangulation-panel__rubric-text {
+  margin: 0 0 10px;
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
+
+.triangulation-panel__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.triangulation-panel__actions button {
+  padding: 8px 14px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 8px;
+  background: var(--color-surface);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.triangulation-panel__actions button.triangulation-panel__primary {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-weight: 600;
+}
+
+.triangulation-panel__note {
+  margin: 8px 0 0;
+  font-size: 0.78rem;
+  color: var(--color-discrepancy-text);
+}
+
+.triangulation-panel__group {
+  margin-top: 16px;
+}
+
+.triangulation-panel__group-title {
+  margin: 0 0 8px;
+  font-size: 0.92rem;
+  color: var(--color-heading);
+}
+
+.triangulation-panel__not-assessable {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+}
+
+.triangulation-panel__history {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  font-size: 0.85rem;
+}
+
+.triangulation-panel__history select {
+  max-width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 8px;
+  background: var(--color-surface);
+  font: inherit;
+}
+
+.triangulation-panel__info {
+  margin: 8px 0 0;
+  font-size: 0.8rem;
+  color: var(--color-text);
+}
+
+.triangulation-panel__info button {
+  margin-left: 6px;
+  padding: 3px 10px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 8px;
+  background: var(--color-surface);
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Hover de los botones principales. */
+.triangulation-panel__actions button.triangulation-panel__primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}

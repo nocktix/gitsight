@@ -1,0 +1,80 @@
+.commit-summary {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface-muted);
+}
+
+.commit-summary__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.commit-summary__title {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.commit-summary button {
+  padding: 6px 12px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 8px;
+  background: var(--color-surface);
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.commit-summary button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.commit-summary button.commit-summary__primary {
+  margin-top: 8px;
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-weight: 600;
+}
+
+.commit-summary__status,
+.commit-summary__meta {
+  margin: 6px 0 0;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.commit-summary__note {
+  margin: 8px 0 0;
+  font-size: 0.8rem;
+  color: var(--color-text);
+}
+
+.commit-summary__text,
+.commit-summary__check {
+  margin: 10px 0 0;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.commit-summary__files {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  font-size: 0.85rem;
+}
+
+.commit-summary__error {
+  margin: 8px 0 0;
+  font-size: 0.82rem;
+  color: var(--color-alert-text);
+}
+
+/* Hover de los botones principales. */
+.commit-summary button.commit-summary__primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}

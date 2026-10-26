@@ -1,0 +1,163 @@
+/*
+ * Colores de la app: paleta "Océano".
+ *
+ * Dos capas:
+ *  1. Paleta base (--ocean-*): los únicos valores de color que existen. Solo se usa aquí.
+ *  2. Capa semántica (--color-*): lo que usan los componentes, siempre por su función
+ *     (superficie, texto, borde, hallazgo, calendario...) y nunca por su tono.
+ *
+ * Los componentes usan solo --color-*. Un modo oscuro sería otro bloque `[data-theme="dark"]` con
+ * los mismos nombres --color-* (ver el final del archivo); la paleta base y los componentes no
+ * cambian.
+ */
+
+:root {
+  /* --- Paleta base ------------------------------------------------------------------- */
+  /* Petróleo (principal) */
+  --ocean-petrol-700: #0b4f6c;
+  --ocean-petrol-800: #083e56;
+  --ocean-petrol-900: #0f2a36;
+  /* Celeste (acento) */
+  --ocean-celeste-100: #d6eef5;
+  --ocean-celeste-200: #b5e0ec;
+  --ocean-celeste-350: #7fd3e6;
+  --ocean-celeste-400: #a5d3e3;
+  --ocean-celeste-500: #20a4c3;
+  --ocean-celeste-600: #1795b3;
+  --ocean-celeste-700: #137797;
+  --ocean-celeste-800: #0c6e88;
+  /* Arena (acento cálido, con moderación) */
+  --ocean-sand-100: #f6e9cf;
+  --ocean-sand-200: #efe8d8;
+  --ocean-sand-300: #eae3d3;
+  --ocean-sand-400: #dcd2bc;
+  --ocean-sand-500: #d9b27c;
+  --ocean-sand-600: #b98a4a;
+  --ocean-sand-800: #8a5a14;
+  /* Neutros cálidos y gris azulado */
+  --ocean-paper-50: #ffffff;
+  --ocean-paper-100: #faf7f0;
+  --ocean-paper-200: #f4f1ea;
+  --ocean-paper-300: #efe9db;
+  --ocean-paper-400: #e6e0d4;
+  --ocean-paper-700: #968d78;
+  --ocean-slate-600: #4a6270;
+  --ocean-slate-300: #c5d6dd;
+  /* Violeta suave (commits fuera de plazo) */
+  --ocean-violet-100: #eeeaf7;
+  --ocean-violet-200: #c9c0e6;
+  --ocean-violet-500: #6f5fa8;
+  --ocean-violet-700: #5e4f9e;
+  /* Estados */
+  --ocean-amber-100: #fbf3e2;
+  --ocean-amber-200: #f5e4c4;
+  --ocean-amber-300: #e3c98e;
+  --ocean-amber-900: #6a4610;
+  --ocean-red-100: #fbe9e7;
+  --ocean-red-150: #fbe4e1;
+  --ocean-red-200: #f6d6d3;
+  --ocean-red-300: #e5a9a3;
+  --ocean-red-800: #8e1f16;
+  --ocean-red-900: #7c2119;
+  --ocean-green-100: #e3f2e7;
+  --ocean-green-300: #a9d3b4;
+  --ocean-green-700: #1f6b3a;
+  /* Transparencias */
+  --ocean-white-a85: rgba(255, 255, 255, 0.85);
+  --ocean-ink-a18: rgba(15, 42, 54, 0.18);
+  --ocean-ink-a45: rgba(15, 42, 54, 0.45);
+}
+
+/* --- Capa semántica (modo claro) ------------------------------------------------------ */
+:root,
+[data-theme="light"] {
+  /* Fondo, superficies y bordes */
+  --color-bg: var(--ocean-paper-200);
+  --color-surface: var(--ocean-paper-50);
+  --color-surface-muted: var(--ocean-paper-100);
+  --color-surface-hover: var(--ocean-paper-300);
+  --color-border: var(--ocean-paper-400);
+  --color-border-strong: var(--ocean-paper-700); /* bordes de controles: ~3:1 sobre la superficie */
+
+  /* Texto */
+  --color-text: var(--ocean-petrol-900);
+  --color-text-muted: var(--ocean-slate-600);
+  --color-heading: var(--ocean-petrol-700);
+  --color-link: var(--ocean-celeste-800);
+
+  /* Acciones y acento */
+  --color-primary: var(--ocean-petrol-700);
+  --color-primary-hover: var(--ocean-petrol-800);
+  --color-on-primary: var(--ocean-paper-50);
+  --color-on-primary-muted: var(--ocean-white-a85); /* blanco con transparencia sobre el petróleo */
+  --color-accent: var(--ocean-celeste-500);
+  --color-accent-strong: var(--ocean-celeste-700);
+  --color-focus: var(--ocean-celeste-600);
+  --color-focus-on-primary: var(--ocean-paper-50);
+  --color-accent-on-primary: var(--ocean-celeste-350); /* acento sobre el petróleo (mismo del logo en fondo oscuro) */
+
+  /* Arena: acento cálido secundario */
+  --color-sand: var(--ocean-sand-500);
+  --color-sand-soft: var(--ocean-sand-100);
+  --color-sand-strong: var(--ocean-sand-600);
+
+  /* Hallazgos */
+  --color-info-bg: var(--ocean-celeste-100);
+  --color-info-text: var(--ocean-petrol-700);
+  --color-info-border: var(--ocean-celeste-400);
+  --color-discrepancy-bg: var(--ocean-amber-200);
+  --color-discrepancy-bg-soft: var(--ocean-amber-100);
+  --color-discrepancy-text: var(--ocean-amber-900);
+  --color-discrepancy-border: var(--ocean-amber-300);
+  --color-alert-bg: var(--ocean-red-200);
+  --color-alert-bg-soft: var(--ocean-red-100);
+  --color-alert-text: var(--ocean-red-900);
+  --color-alert-border: var(--ocean-red-300);
+  --color-success-text: var(--ocean-green-700);
+
+  /* Diff de commits y comparación de rúbricas (propios, aunque hoy compartan valores) */
+  --color-diff-added-bg: var(--ocean-green-100);
+  --color-diff-added-text: var(--ocean-green-700);
+  --color-diff-added-border: var(--ocean-green-300);
+  --color-diff-removed-bg: var(--ocean-red-150);
+  --color-diff-removed-text: var(--ocean-red-800);
+  --color-diff-removed-border: var(--ocean-red-300);
+
+  /* Calendario de actividad: de arena claro a petróleo, pasando por celeste */
+  --color-activity-0: var(--ocean-sand-200);
+  --color-activity-1: var(--ocean-celeste-200);
+  --color-activity-2: var(--color-accent);
+  --color-activity-3: var(--color-accent-strong);
+  --color-activity-4: var(--ocean-petrol-700);
+  --color-commit: var(--color-accent);
+  --color-commit-hover: var(--color-accent-strong);
+
+  /* Plazos: commits fuera de plazo (violeta), sombreado posterior a la entrega, hitos */
+  --color-late-commit: var(--ocean-violet-500);
+  --color-late-commit-soft: var(--ocean-violet-200);
+  --color-late-commit-faint: var(--ocean-violet-100);
+  --color-late-commit-text: var(--ocean-violet-700);
+  --color-deadline-shade: var(--ocean-sand-300);
+  --color-deadline-stripe: var(--ocean-sand-400);
+  --color-milestone-start: var(--ocean-petrol-700);
+  --color-milestone-end: var(--ocean-sand-800);
+
+  /* Capas flotantes */
+  --color-overlay: var(--ocean-ink-a45);
+  --color-shadow: var(--ocean-ink-a18);
+  --color-tooltip-bg: var(--ocean-petrol-900);
+  --color-tooltip-text: var(--ocean-paper-50);
+  --color-tooltip-muted: var(--ocean-slate-300);
+  --color-tooltip-accent: var(--color-accent-on-primary);
+}
+
+/*
+ * Modo oscuro (no implementado): bastaría un bloque como este, con los mismos nombres --color-*
+ * redefinidos sobre una paleta oscura, y activar data-theme="dark" en <html>.
+ *
+ * [data-theme="dark"] {
+ *   --color-bg: ...;
+ *   --color-surface: ...;
+ *   (el resto de --color-* de arriba)
+ * }
+ */
