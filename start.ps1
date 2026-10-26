@@ -21,13 +21,13 @@ $BackendPort = 8000
 $FrontendPort = 5173
 $MinPython = '3.12'
 $MinNode = '22.18'
-$Url = "http://localhost:$FrontendPort"
+$Url = "http://localhost:${FrontendPort}"
 $LogDir = Join-Path $PSScriptRoot '.tid-logs'
 
 function Say($text)  { Write-Host $text -ForegroundColor Cyan }
-function Ok($text)   { Write-Host "[ok] $text" -ForegroundColor Green }
-function Warn($text) { Write-Host "[!] $text" -ForegroundColor Yellow }
-function Fail($text) { Write-Host "[x] $text" -ForegroundColor Red; exit 1 }
+function Ok($text)   { Write-Host "[ok] ${text}" -ForegroundColor Green }
+function Warn($text) { Write-Host "[!] ${text}" -ForegroundColor Yellow }
+function Fail($text) { Write-Host "[x] ${text}" -ForegroundColor Red; exit 1 }
 
 # --- 1. Requisitos ---------------------------------------------------------------------------
 
@@ -48,19 +48,19 @@ function Find-Python {
 }
 
 $py = Find-Python
-if (-not $py) { Fail "Falta Python $MinPython o superior. Instalalo desde https://www.python.org/downloads/ (marca 'Add python.exe to PATH') y vuelve a ejecutar." }
+if (-not $py) { Fail "Falta Python ${MinPython} o superior. Instalalo desde https://www.python.org/downloads/ (marca 'Add python.exe to PATH') y vuelve a ejecutar." }
 $pyExe = $py[0]
 $pyArgs = @()
 if ($py.Length -gt 1) { $pyArgs = $py[1..($py.Length - 1)] }
 Ok ("Python: " + (& $pyExe @pyArgs --version 2>&1))
 
-if (-not (Get-Command node -ErrorAction SilentlyContinue)) { Fail "Falta Node.js $MinNode o superior. Instalalo desde https://nodejs.org/ (version LTS) y vuelve a ejecutar." }
+if (-not (Get-Command node -ErrorAction SilentlyContinue)) { Fail "Falta Node.js ${MinNode} o superior. Instalalo desde https://nodejs.org/ (version LTS) y vuelve a ejecutar." }
 $nodeVersion = (& node --version).TrimStart('v')
 $nodeParts = $nodeVersion.Split('.') | ForEach-Object { [int]$_ }
 $minParts = $MinNode.Split('.') | ForEach-Object { [int]$_ }
 $nodeOk = ($nodeParts[0] -gt $minParts[0]) -or (($nodeParts[0] -eq $minParts[0]) -and ($nodeParts[1] -ge $minParts[1]))
-if (-not $nodeOk) { Fail "Tu Node.js es v$nodeVersion y se necesita $MinNode o superior. Actualizalo desde https://nodejs.org/ (version LTS)." }
-Ok "Node.js: v$nodeVersion"
+if (-not $nodeOk) { Fail "Tu Node.js es v${nodeVersion} y se necesita ${MinNode} o superior. Actualizalo desde https://nodejs.org/ (version LTS)." }
+Ok "Node.js: v${nodeVersion}"
 
 if (-not (Get-Command npm.cmd -ErrorAction SilentlyContinue)) { Fail 'Falta npm (viene con Node.js). Reinstala Node.js desde https://nodejs.org/.' }
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) { Fail 'Falta git, que se usa para descargar los repositorios de los estudiantes. Instalalo desde https://git-scm.com/downloads.' }
@@ -108,7 +108,7 @@ function Ensure-PortFree([int]$port, [string]$what) {
     $conns = Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue
     if (-not $conns) { return }
     $pids = $conns | Select-Object -ExpandProperty OwningProcess -Unique
-    Warn "El puerto $port ($what) ya esta en uso por:"
+    Warn "El puerto ${port} (${what}) ya esta en uso por:"
     foreach ($p in $pids) {
         $proc = Get-Process -Id $p -ErrorAction SilentlyContinue
         Write-Host ("    PID {0}  {1}" -f $p, $(if ($proc) { $proc.ProcessName } else { '?' }))
@@ -119,10 +119,10 @@ function Ensure-PortFree([int]$port, [string]$what) {
             foreach ($p in $pids) { Stop-Process -Id $p -Force -ErrorAction SilentlyContinue }
             Start-Sleep -Seconds 2
             if (-not (Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue)) { return }
-            Fail "No se pudo liberar el puerto $port. Cierra el programa a mano y vuelve a ejecutar."
+            Fail "No se pudo liberar el puerto ${port}. Cierra el programa a mano y vuelve a ejecutar."
         }
     }
-    Fail "Libera el puerto $port (cierra ese programa) y vuelve a ejecutar start.bat."
+    Fail "Libera el puerto ${port} (cierra ese programa) y vuelve a ejecutar start.bat."
 }
 
 Ensure-PortFree $BackendPort 'backend'
@@ -139,14 +139,14 @@ function Stop-Tree($proc) {
 }
 
 try {
-    Say "Arrancando el backend en el puerto $BackendPort..."
+    Say "Arrancando el backend en el puerto ${BackendPort}..."
     $back = Start-Process -FilePath $venvPython -PassThru -NoNewWindow `
-        -ArgumentList @('-m', 'uvicorn', 'app.main:app', '--app-dir', 'backend', '--host', '127.0.0.1', '--port', "$BackendPort") `
+        -ArgumentList @('-m', 'uvicorn', 'app.main:app', '--app-dir', 'backend', '--host', '127.0.0.1', '--port', "${BackendPort}") `
         -RedirectStandardOutput (Join-Path $LogDir 'backend.log') -RedirectStandardError (Join-Path $LogDir 'backend.err.log')
 
-    Say "Arrancando el frontend en el puerto $FrontendPort..."
+    Say "Arrancando el frontend en el puerto ${FrontendPort}..."
     $front = Start-Process -FilePath 'npm.cmd' -PassThru -NoNewWindow -WorkingDirectory (Join-Path $PSScriptRoot 'frontend') `
-        -ArgumentList @('run', 'dev', '--', '--port', "$FrontendPort", '--strictPort') `
+        -ArgumentList @('run', 'dev', '--', '--port', "${FrontendPort}", '--strictPort') `
         -RedirectStandardOutput (Join-Path $LogDir 'frontend.log') -RedirectStandardError (Join-Path $LogDir 'frontend.err.log')
 
     function Wait-For($uri, $name, $proc, $log) {
@@ -156,21 +156,21 @@ try {
                 return
             } catch { }
             if ($proc.HasExited) {
-                Warn "$name se cerro al arrancar. Ultimas lineas de $log y su .err.log:"
+                Warn "${name} se cerro al arrancar. Ultimas lineas de ${log} y su .err.log:"
                 foreach ($f in @($log, ($log -replace '\.log$', '.err.log'))) {
                     if (Test-Path -LiteralPath $f) { Get-Content -LiteralPath $f -Tail 15 }
                 }
-                throw "$name no arranco"
+                throw "${name} no arranco"
             }
             Start-Sleep -Milliseconds 500
         }
-        throw "$name no respondio en 60 segundos. Revisa la carpeta .tid-logs"
+        throw "${name} no respondio en 60 segundos. Revisa la carpeta .tid-logs"
     }
-    Wait-For "http://127.0.0.1:$BackendPort/api/health" 'El backend' $back (Join-Path $LogDir 'backend.log')
+    Wait-For "http://127.0.0.1:${BackendPort}/api/health" 'El backend' $back (Join-Path $LogDir 'backend.log')
     Wait-For $Url 'El frontend' $front (Join-Path $LogDir 'frontend.log')
 
     Write-Host ''
-    Say "GitSight esta listo:  $Url"
+    Say "GitSight esta listo:  ${Url}"
     Write-Host '  Para cerrarlo, presiona Ctrl+C en esta ventana (o cierrala).'
     Write-Host '  Registros: carpeta .tid-logs'
 
