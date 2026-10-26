@@ -1,0 +1,5 @@
+# Normaliza los saltos de línea al subir; los scripts de arranque necesitan los suyos al bajarlos.
+* text=auto
+*.sh text eol=lf
+*.ps1 text eol=crlf
+*.bat text eol=crlf

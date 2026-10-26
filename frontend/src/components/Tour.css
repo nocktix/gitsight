@@ -1,0 +1,89 @@
+.tour {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+}
+
+/* El hueco sobre el elemento se logra con una sombra enorme alrededor de él. */
+.tour__spotlight {
+  position: fixed;
+  border-radius: 8px;
+  box-shadow: 0 0 0 9999px var(--color-overlay);
+  transition:
+    top var(--motion-base) var(--motion-ease),
+    left var(--motion-base) var(--motion-ease),
+    width var(--motion-base) var(--motion-ease),
+    height var(--motion-base) var(--motion-ease);
+}
+
+.tour__veil {
+  position: fixed;
+  inset: 0;
+  background: var(--color-overlay);
+}
+
+.tour__card {
+  position: fixed;
+  box-sizing: border-box;
+  max-width: calc(100vw - 24px);
+  padding: 16px 18px;
+  border-radius: 8px;
+  background: var(--color-surface);
+  box-shadow: 0 8px 32px var(--color-shadow);
+  pointer-events: auto;
+  animation: fade-in-up var(--motion-base) var(--motion-ease);
+}
+
+.tour__progress {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.tour__title {
+  margin: 2px 0 6px;
+  font-size: 1.05rem;
+  color: var(--color-heading);
+}
+
+.tour__text {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--color-text);
+}
+
+.tour__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+}
+
+.tour__nav {
+  display: inline-flex;
+  gap: 8px;
+}
+
+.tour__skip {
+  border: none;
+  background: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+.tour__actions button.tour__next {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-weight: 600;
+}
+
+/* Hover de los botones principales. */
+.tour__actions button.tour__next:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}

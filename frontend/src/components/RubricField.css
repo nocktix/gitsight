@@ -1,0 +1,83 @@
+.rubric-field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rubric-field__upload {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+}
+
+.rubric-field__file {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--color-text);
+}
+
+.rubric-field__or {
+  color: var(--color-text-muted);
+}
+
+.rubric-field__status {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.rubric-field__error {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-alert-text);
+}
+
+.rubric-field__textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.85rem;
+  resize: vertical;
+}
+
+.rubric-field__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.rubric-field__primary,
+.rubric-field__secondary {
+  padding: 8px 14px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.rubric-field__primary {
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-weight: 600;
+}
+
+.rubric-field__secondary {
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+}
+
+.rubric-field__primary:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Hover de los botones principales. */
+.rubric-field__primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}

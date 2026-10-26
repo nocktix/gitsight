@@ -1,0 +1,119 @@
+.activity {
+  margin: 16px 24px;
+  padding: 16px 20px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+}
+
+.activity__title {
+  margin: 0 0 12px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.activity__loading {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.activity__error {
+  color: var(--color-alert-text);
+  font-size: 0.9rem;
+}
+
+.activity__error-detail {
+  margin-top: 4px;
+  font-size: 0.78rem;
+  color: var(--color-alert-text);
+}
+
+.activity__empty {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.activity__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.activity__header {
+  padding-left: 132px;
+}
+
+.activity__legend {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 14px;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.activity__legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.activity__swatch {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  background: var(--color-activity-0);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+}
+
+.activity__swatch--start {
+  box-shadow: inset 0 0 0 2px var(--color-milestone-start), inset 0 0 0 3px var(--color-surface);
+}
+.activity__swatch--end {
+  box-shadow: inset 0 0 0 2px var(--color-milestone-end), inset 0 0 0 3px var(--color-surface);
+}
+.activity__swatch--late {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--color-deadline-stripe) 0 1px,
+    var(--color-deadline-shade) 1px 5px
+  );
+}
+.activity__swatch--late-commit {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--color-late-commit) 0 3px,
+    var(--color-late-commit-soft) 3px 6px
+  );
+}
+.activity__swatch--l1 { background: var(--color-activity-1); }
+.activity__swatch--l2 { background: var(--color-activity-2); }
+.activity__swatch--l3 { background: var(--color-activity-3); }
+.activity__swatch--l4 { background: var(--color-activity-4); }
+
+.activity__note {
+  margin: 10px 0 0;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+/* Al cambiar entre el calendario y la vista por horas, la nueva vista aparece con un fundido corto. */
+.activity__view {
+  animation: fade-in-up var(--motion-base) var(--motion-ease);
+}
+
+/* Solo la muestra de "sin commits" lleva borde; las demás se ven por su color o su patrón. */
+.activity__swatch--late,
+.activity__swatch--late-commit,
+.activity__swatch--l1,
+.activity__swatch--l2,
+.activity__swatch--l3,
+.activity__swatch--l4 {
+  box-shadow: none;
+}

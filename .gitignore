@@ -1,0 +1,55 @@
+# --- Secretos y configuración local (nunca se suben) ---
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# --- Datos locales: base de datos, respaldos y repos clonados ---
+data/
+*.db
+*.db-journal
+*.db.bak-*
+*.sqlite
+*.sqlite3
+.tid-cache/
+.tid-logs/
+outputs/
+test-repos/
+
+# --- Python ---
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# --- Node / frontend ---
+node_modules/
+dist/
+dist-ssr/
+*.local
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# --- Asistentes de IA y herramientas locales (cada persona puede tener las suyas) ---
+CLAUDE.md
+.claude/
+
+# --- Editor y sistema operativo ---
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+desktop.ini

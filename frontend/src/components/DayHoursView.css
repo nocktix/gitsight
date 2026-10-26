@@ -1,0 +1,42 @@
+.day-hours__header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.day-hours__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-heading);
+}
+
+.day-hours__count {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
+.day-hours__back {
+  border: 1px solid var(--color-border-strong);
+  border-radius: 6px;
+  background: var(--color-surface);
+  padding: 4px 10px;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.day-hours__back:hover {
+  background: var(--color-surface-hover);
+}
+
+.day-hours__hint {
+  margin: 6px 0 16px;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.day-hours__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}

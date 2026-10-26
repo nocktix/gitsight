@@ -1,0 +1,7 @@
+.llm-error__retry {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 6px;
+}

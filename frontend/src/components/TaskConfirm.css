@@ -1,0 +1,61 @@
+.task-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-discrepancy-border);
+  border-radius: 8px;
+  background: var(--color-discrepancy-bg-soft);
+  font-size: 0.85rem;
+  color: var(--color-discrepancy-text);
+}
+
+.task-confirm__text,
+.task-confirm__group,
+.task-confirm__error {
+  margin: 0;
+}
+
+.task-confirm__error {
+  color: var(--color-alert-text);
+}
+
+.task-confirm__input {
+  padding: 8px 10px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 6px;
+  font: inherit;
+}
+
+.task-confirm__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.task-confirm__actions button {
+  padding: 6px 12px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 6px;
+  background: var(--color-surface);
+  font: inherit;
+  cursor: pointer;
+}
+
+.task-confirm__actions button.task-confirm__primary {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-weight: 600;
+}
+
+.task-confirm__actions button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Hover de los botones principales. */
+.task-confirm__actions button.task-confirm__primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}

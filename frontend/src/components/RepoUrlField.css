@@ -1,0 +1,67 @@
+.repo-url-field {
+  padding: 16px 24px 12px;
+}
+
+.repo-url-field__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+}
+
+.repo-url-field__label {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.repo-url-field__input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 6px;
+  background: var(--color-surface);
+  font-size: 0.88rem;
+  color: var(--color-text);
+  font-family: inherit;
+}
+
+.repo-url-field__input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.repo-url-field__input:focus {
+  border-color: var(--color-focus);
+}
+
+.repo-url-field__error {
+  margin: 6px 0 0;
+  font-size: 0.78rem;
+  color: var(--color-alert-text);
+}
+
+/* Acción principal */
+.repo-url-field__button {
+  padding: 6px 16px;
+  border: 1px solid var(--color-primary);
+  border-radius: 6px;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.repo-url-field__button:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.repo-url-field__button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}

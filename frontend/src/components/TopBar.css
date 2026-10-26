@@ -1,0 +1,149 @@
+.top-bar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 16px 24px;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.top-bar__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-brand);
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--color-on-primary);
+}
+
+.top-bar__logo {
+  display: block;
+  flex-shrink: 0;
+}
+
+.top-bar__date {
+  font-size: 0.8rem;
+  color: var(--color-on-primary-muted);
+}
+
+.top-bar__selectors {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Píldora blanca: la misma para Tarea, Grupo, Modelo de IA y "?". */
+.top-bar__select,
+.top-bar__gear,
+.top-bar__help {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.top-bar__select:hover,
+.top-bar__gear:hover,
+.top-bar__help:hover {
+  background: var(--color-surface-hover);
+}
+
+/* Tarea y Grupo: etiqueta, valor y chevron propio. El select real va encima, transparente,
+   para que toda la píldora abra la lista sin mostrar un control nativo anidado. */
+.top-bar__select {
+  position: relative;
+  padding: 5px 30px 5px 12px;
+}
+
+.top-bar__select-label {
+  font-size: 0.74rem;
+  color: var(--color-text-muted);
+}
+
+.top-bar__select-value {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.top-bar__select::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 13px;
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid var(--color-text-muted);
+  border-bottom: 2px solid var(--color-text-muted);
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+}
+
+.top-bar__select select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  appearance: none;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.top-bar__select select option {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.top-bar__gear {
+  padding: 5px 12px;
+}
+
+/* Modelo pendiente: borde arena y punto, que se distinguen también sobre la píldora blanca. */
+.top-bar__gear--pending {
+  border-color: var(--color-sand-strong);
+  box-shadow: 0 0 0 1px var(--color-sand-strong);
+  color: var(--color-discrepancy-text);
+}
+
+.top-bar__gear--pending::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-sand-strong);
+}
+
+.top-bar__help {
+  width: 28px;
+  height: 28px;
+  justify-content: center;
+  padding: 0;
+  font-weight: 600;
+}
+
+/* Foco sobre la barra: anillo blanco separado, que no deforma la píldora. */
+.top-bar button:focus-visible,
+.top-bar__select:has(select:focus-visible) {
+  outline: 2px solid var(--color-focus-on-primary);
+  outline-offset: 2px;
+}

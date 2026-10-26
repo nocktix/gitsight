@@ -1,0 +1,99 @@
+.ramp-chart-svg {
+  position: relative;
+  width: 100%;
+}
+
+.ramp-chart-svg__svg {
+  display: block;
+  width: 100%;
+}
+
+.ramp-chart-svg__timeline {
+  stroke: var(--color-border);
+  stroke-width: 1;
+}
+
+.ramp-chart-svg__timeline--highlighted {
+  stroke: var(--color-border-strong);
+}
+
+.ramp-chart-svg__deadline {
+  stroke: var(--color-milestone-end);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 3; /* punteada: la entrega no se confunde con una alerta */
+}
+
+.ramp-chart-svg__deadline-label {
+  font-size: 9px;
+  font-weight: 600;
+  fill: var(--color-milestone-end);
+}
+
+.ramp-chart-svg__triangle {
+  fill: var(--color-commit);
+  cursor: pointer;
+  stroke: transparent;
+  stroke-width: 2;
+  transition:
+    fill 0.1s ease,
+    opacity var(--motion-fast) var(--motion-ease),
+    stroke var(--motion-fast) var(--motion-ease);
+}
+
+.ramp-chart-svg__triangle:hover {
+  fill: var(--color-commit-hover);
+}
+
+/* Fuera de plazo: violeta, y además triángulo con contorno (relleno claro) frente al sólido de los commits a tiempo. */
+.ramp-chart-svg__triangle--late {
+  fill: var(--color-late-commit-faint);
+  stroke: var(--color-late-commit);
+}
+
+.ramp-chart-svg__triangle--late:hover {
+  fill: var(--color-late-commit-soft);
+}
+
+.ramp-chart-svg__tick {
+  font-size: 9px;
+  fill: var(--color-text-muted);
+}
+
+.ramp-chart-svg__tooltip {
+  position: absolute;
+  transform: translate(-50%, -100%) translateY(-8px);
+  background: var(--color-tooltip-bg);
+  color: var(--color-tooltip-text);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.ramp-chart-svg__tooltip-hash {
+  margin: 0;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  color: var(--color-tooltip-accent);
+}
+
+.ramp-chart-svg__tooltip-title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.ramp-chart-svg__tooltip-lines,
+.ramp-chart-svg__tooltip-date {
+  margin: 0;
+  color: var(--color-tooltip-muted);
+}
+
+.ramp-chart-svg__triangle--cited {
+  stroke: var(--color-text);
+}
+
+.ramp-chart-svg__triangle--dim {
+  opacity: 0.25;
+}
