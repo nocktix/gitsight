@@ -144,6 +144,10 @@ export default function LlmSettings() {
               type="url"
               value={current.baseUrl}
             />
+            <small className="llm-settings__hint">
+              Para servicios que no están en la lista: pega la dirección de la API que te indique el
+              proveedor
+            </small>
           </label>
         )}
 

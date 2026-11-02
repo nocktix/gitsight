@@ -30,7 +30,7 @@ export const PROVIDERS: ProviderPreset[] = [
   { id: "groq", label: "Groq", baseUrl: "https://api.groq.com/openai/v1", modelPlaceholder: "llama-3.3-70b-versatile", keysUrl: "https://console.groq.com/keys", keyRequired: true },
   { id: "deepseek", label: "DeepSeek", baseUrl: "https://api.deepseek.com", modelPlaceholder: "deepseek-chat", keysUrl: "https://platform.deepseek.com/api_keys", keyRequired: true },
   { id: "ollama", label: "Ollama (local)", baseUrl: "http://localhost:11434/v1", modelPlaceholder: "llama3.1", keysUrl: null, keyRequired: false },
-  { id: "custom", label: "Otro (compatible con OpenAI)", baseUrl: "", modelPlaceholder: "nombre-del-modelo", keysUrl: null, keyRequired: false },
+  { id: "custom", label: "Otro proveedor (URL propia)", baseUrl: "", modelPlaceholder: "nombre-del-modelo", keysUrl: null, keyRequired: false },
 ];
 
 export function presetOf(id: ProviderId): ProviderPreset {

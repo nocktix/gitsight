@@ -142,7 +142,7 @@ botón **Modelo de IA** (engranaje) de la barra superior.
 | Groq | [console.groq.com/keys](https://console.groq.com/keys) | `llama-3.3-70b-versatile` |
 | DeepSeek | [platform.deepseek.com/api_keys](https://platform.deepseek.com/api_keys) | `deepseek-chat` |
 | Ollama (local) | no necesita clave | `llama3.1` |
-| Otro (compatible con OpenAI) | la de tu servicio | el nombre que use tu servicio |
+| Otro proveedor (URL propia) | la de tu servicio | el nombre que use tu servicio |
 
 Los nombres de modelo cambian con el tiempo: si el proveedor no reconoce el que usas, revisa su lista de
 modelos y escribe uno vigente. Las páginas de clave piden iniciar sesión.
