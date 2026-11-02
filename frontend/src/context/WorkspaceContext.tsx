@@ -203,6 +203,15 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     [load],
   );
 
+  const refreshTask = useCallback(
+    async (taskId: string) => {
+      const loaded = await loadTask(taskId);
+      updateTask(taskId, (t) => ({ ...loaded, lastGroupUrl: t.lastGroupUrl }));
+      return loaded;
+    },
+    [updateTask],
+  );
+
   const activeTaskId = active?.taskId;
   /** Cambia una fecha y la guarda; si el backend falla se restaura la anterior y se avisa. */
   const changeDate = useCallback(
@@ -282,6 +291,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     openGroup,
     detectTask,
     switchTask,
+    refreshTask,
     setStartDate,
     setEndDate,
     taskStart,

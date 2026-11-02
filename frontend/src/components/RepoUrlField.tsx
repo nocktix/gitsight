@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useWorkspace } from "../context/useWorkspace";
 import { useOpenRepo } from "../hooks/useOpenRepo";
+import BatchPanel from "./BatchPanel";
+import { Dialog } from "./RubricDialogs";
 import TaskConfirm from "./TaskConfirm";
 import "./RepoUrlField.css";
 
@@ -8,6 +10,7 @@ import "./RepoUrlField.css";
 export default function RepoUrlField() {
   const { pendingUrl, openError } = useWorkspace();
   const [value, setValue] = useState("");
+  const [batchOpen, setBatchOpen] = useState(false);
   const { toConfirm, submit, confirm, cancel } = useOpenRepo(() => setValue(""));
 
   return (
@@ -33,7 +36,19 @@ export default function RepoUrlField() {
         <button className="repo-url-field__button" disabled={!!pendingUrl} type="submit">
           {pendingUrl ? "Descargando…" : "Abrir"}
         </button>
+        <button
+          className="repo-url-field__secondary"
+          onClick={() => setBatchOpen(true)}
+          type="button"
+        >
+          Tarea completa (carpeta)
+        </button>
       </form>
+      {batchOpen && (
+        <Dialog onClose={() => setBatchOpen(false)} title="Tarea completa (carpeta)" wide>
+          <BatchPanel onGroupOpened={() => setBatchOpen(false)} />
+        </Dialog>
+      )}
       {toConfirm && <TaskConfirm detected={toConfirm} onCancel={cancel} onConfirm={confirm} />}
       {openError && <p className="repo-url-field__error">{openError}</p>}
     </div>

@@ -205,6 +205,19 @@ def test_analyze_saves_model_head_commit_and_tz_timestamp(client, analyze_env):
     assert row["result"]["summary"] == "s"
 
 
+def test_analyze_by_path_saves_under_group_url(client, analyze_env):
+    """Lote: se analiza la carpeta local (repo_path) pero el historial va con la clave del grupo."""
+    _put_rubric(client, f"/api/tasks/{TASK}/rubric", "R")
+    r = client.post(
+        "/api/analyze",
+        json={"repo_path": "/descargas/tarea02-ana", "group_url": URL_A, "task_id": TASK},
+    )
+    assert r.status_code == 200, r.text
+    saved = client.get("/api/analyses", params={"group_url": URL_A}).json()
+    assert len(saved) == 1 and saved[0]["rubric_version"] == 1  # usó la rúbrica activa
+    assert client.get("/api/analyses", params={"group_url": "/descargas/tarea02-ana"}).json() == []
+
+
 def test_analyze_explicit_rubric_version_wins(client, analyze_env):
     _put_rubric(client, f"/api/tasks/{TASK}/rubric", "A")
     _put_rubric(client, f"/api/tasks/{TASK}/rubric", "B")

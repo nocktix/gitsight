@@ -286,6 +286,50 @@ cuando quieras con el botón **?** de la barra superior.
 
 ![Recorrido guiado](docs/img/14-recorrido.png)
 
+### 6.9 Analizar una tarea completa desde una carpeta
+
+Si tienes los repositorios de todos los grupos en tu computador, GitSight los analiza uno tras otro.
+GitSight analiza la copia descargada: para ver commits nuevos, vuelve a correr `gh teacher download` y
+escanea la carpeta nueva.
+
+1. **Descarga los repositorios** con la extensión de Classroom 50 para `gh`:
+
+   ```bash
+   gh teacher download
+   ```
+
+   Crea una carpeta nueva (con fecha y hora en el nombre) en la que cada subcarpeta es un repositorio
+   `<classroom>-<tarea>-<usuario>`. El archivo `scores.csv` que queda en la raíz se ignora.
+
+2. **Copia la ruta de la carpeta.** En el Finder de Mac, selecciona la carpeta y pulsa **⌥⌘C**
+   (Opción + Comando + C): copia su ruta completa, lista para pegar.
+
+3. En la pantalla de inicio abre la pestaña **Tarea completa (carpeta)**, pega la ruta y pulsa
+   **Escanear carpeta**. Verás una tabla con cada grupo, sus commits y su estado.
+
+4. Pulsa **Analizar todos**. GitSight analiza un grupo a la vez con la rúbrica activa de la tarea, muestra
+   el avance y deja cancelar en cualquier momento. Si un grupo falla (por ejemplo, por la clave o el
+   crédito del modelo), lo marca con el error y sigue con el siguiente; al terminar puedes volver a
+   pulsar **Analizar todos** para reintentar solo los que fallaron. Cada análisis queda en el
+   [historial](#67-historial-de-análisis) como si lo hubieras hecho de a uno, y **Abrir** muestra el grupo.
+
+Cómo se deducen la tarea y los grupos:
+
+- Cada repositorio de Classroom 50 trae un archivo `.classroom50.yaml` con el classroom y la tarea.
+  GitSight lo usa para obtener el prefijo exacto `<classroom>-<tarea>-` y lo que sigue es el **grupo**
+  (así `ana-x` y `ana-y` quedan como dos grupos distintos).
+- Si el archivo no está, la **tarea** es el prefijo común de los nombres de las subcarpetas (sin el guion
+  final) y el grupo es el resto. En ese caso, usuarios que comparten su primer segmento (`ana-x`,
+  `ana-y`) se confunden con el prefijo.
+- GitSight lee el `origin` de cada repositorio (que `gh teacher download` deja configurado). La tarea es
+  `organización/prefijo` y el grupo se identifica con su dirección de GitHub, igual que al abrirlo por
+  URL: un grupo que ya habías abierto por URL es el mismo y conserva su historial y la rúbrica.
+- Cada descarga crea una carpeta distinta. Si vuelves a escanear una descarga más nueva de la misma
+  tarea, GitSight solo actualiza dónde está cada repositorio; no duplica nada ni pierde análisis.
+- Si algún repositorio no tiene `origin` de GitHub, o las organizaciones son distintas, la tarea se llama
+  `local/prefijo` y GitSight lo avisa. Esos grupos se analizan igual, pero no se pueden abrir con
+  **Abrir**.
+
 ## 7. Formato de la bitácora y de la autoría
 
 GitSight busca los dos archivos en la **raíz del repositorio**. Son texto libre: no hace falta un formato

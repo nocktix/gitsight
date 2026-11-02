@@ -51,8 +51,9 @@ def put_task(task_id: str, start_date: str | None, end_date: str | None) -> None
 
 def add_groups(task_id: str, groups: list[dict]) -> list[str]:
     """Agrega los grupos a la tarea (la tarea se crea si no existe). Repetir un grupo ya
-    guardado en esa tarea no hace nada. Devuelve las URL que pertenecen a otra tarea, que no
-    se tocan; si hay alguna no se agrega ninguno."""
+    guardado en esa tarea no hace nada, salvo que traiga `local_path`: entonces se actualiza.
+    Devuelve las URL que pertenecen a otra tarea, que no se tocan; si hay alguna no se agrega
+    ninguno."""
     with connect() as conn:
         urls = [g["url"] for g in groups]
         owners = {
@@ -67,10 +68,21 @@ def add_groups(task_id: str, groups: list[dict]) -> list[str]:
             return conflicts
         ensure_task(conn, task_id)
         conn.executemany(
-            "INSERT OR IGNORE INTO groups (url, task_id, name) VALUES (?, ?, ?)",
-            [(g["url"], task_id, g["name"]) for g in groups],
+            "INSERT OR IGNORE INTO groups (url, task_id, name, local_path) VALUES (?, ?, ?, ?)",
+            [(g["url"], task_id, g["name"], g.get("local_path")) for g in groups],
+        )
+        conn.executemany(
+            "UPDATE groups SET local_path = ? WHERE url = ?",
+            [(g["local_path"], g["url"]) for g in groups if g.get("local_path")],
         )
     return []
+
+
+def get_local_path(url: str) -> str | None:
+    """Carpeta local del grupo (la del último escaneo por lote), si la tiene."""
+    with connect() as conn:
+        row = conn.execute("SELECT local_path FROM groups WHERE url = ?", (url,)).fetchone()
+    return row["local_path"] if row else None
 
 
 # --- rúbricas -------------------------------------------------------------------------

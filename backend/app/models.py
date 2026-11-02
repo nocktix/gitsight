@@ -16,6 +16,9 @@ class LLMSettings(BaseModel):
 class AnalyzeRequest(BaseModel):
     repo_path: str | None = None
     repo_url: str | None = None
+    # Clave bajo la que se guarda el análisis cuando se analiza por repo_path (lote): la URL
+    # del origin, o la ruta si el repo no tiene origin. Sin ella se usa repo_url o repo_path.
+    group_url: str | None = None
     include_prompt_log: bool = False
     include_authorship: bool = False
     rubric: str | None = None

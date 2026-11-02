@@ -26,6 +26,8 @@ export interface WorkspaceValue {
   /** Tarea y grupo detectados para una URL sin cargarla (null si la URL no es válida). */
   detectTask: (url: string) => ParsedRepo | null;
   switchTask: (taskId: string) => void;
+  /** Lee la tarea del backend y la deja disponible (grupos, fechas, rúbrica); la devuelve. */
+  refreshTask: (taskId: string) => Promise<TaskData>;
 
   setStartDate: (value: string) => void;
   setEndDate: (value: string) => void;

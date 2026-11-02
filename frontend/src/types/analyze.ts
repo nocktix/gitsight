@@ -35,7 +35,11 @@ export interface LlmSettings {
 }
 
 export interface AnalyzeRequest {
-  repo_url: string;
+  /** URL de GitHub (se clona o se usa la carpeta del último escaneo). */
+  repo_url?: string;
+  /** Carpeta local (lote). Con ella, `group_url` es la clave bajo la que se guarda el análisis. */
+  repo_path?: string;
+  group_url?: string;
   include_prompt_log: boolean;
   include_authorship: boolean;
   rubric?: string;

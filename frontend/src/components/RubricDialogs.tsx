@@ -13,7 +13,8 @@ function useEscape(onClose: () => void) {
   }, [onClose]);
 }
 
-function Dialog({
+/** Diálogo modal genérico (Escape o clic fuera lo cierran); también lo usa el lote. */
+export function Dialog({
   title,
   onClose,
   wide = false,

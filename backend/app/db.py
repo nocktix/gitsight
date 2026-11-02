@@ -24,7 +24,8 @@ CREATE TABLE IF NOT EXISTS tasks (
 CREATE TABLE IF NOT EXISTS groups (
     url     TEXT PRIMARY KEY,
     task_id TEXT NOT NULL REFERENCES tasks(id),
-    name    TEXT NOT NULL
+    name    TEXT NOT NULL,
+    local_path TEXT                -- carpeta del último escaneo por lote; cambia en cada descarga
 );
 
 -- Las rúbricas nunca se sobrescriben: subir o editar crea una versión nueva. Una sola está
@@ -102,6 +103,7 @@ _ADDED_COLUMNS = [
     ("rubrics", "note", "TEXT"),
     ("rubrics", "active", "INTEGER NOT NULL DEFAULT 0"),
     ("analyses", "rubric_state", "TEXT"),
+    ("groups", "local_path", "TEXT"),
 ]
 
 

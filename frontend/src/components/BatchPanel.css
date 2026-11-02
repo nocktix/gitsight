@@ -1,0 +1,73 @@
+.batch {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.batch__form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.batch__task,
+.batch__count {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.batch__warning {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--color-alert-text);
+}
+
+.batch__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.batch__table th,
+.batch__table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.batch__status--error {
+  color: var(--color-alert-text);
+}
+
+.batch__message {
+  display: block;
+  font-size: 0.75rem;
+}
+
+.batch__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.batch__open,
+.batch__cancel {
+  padding: 4px 12px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.batch__open:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.batch progress {
+  width: 100%;
+}

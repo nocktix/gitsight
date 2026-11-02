@@ -95,3 +95,33 @@
   background: var(--color-primary-hover);
   border-color: var(--color-primary-hover);
 }
+
+/* Pestañas: un repositorio / tarea completa. */
+.welcome__tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.welcome__tab {
+  padding: 8px 12px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.welcome__tab[aria-selected="true"] {
+  border-bottom-color: var(--color-primary);
+  color: var(--color-heading);
+  font-weight: 600;
+}
+
+.welcome__form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}

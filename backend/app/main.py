@@ -41,6 +41,7 @@ from app.models import (
 )
 from app.config import is_excluded_author
 from app.repo_cache import CorruptedCacheError, RepoCloneError
+from app.routes_batch import router as batch_router
 from app.routes_db import router as db_router
 from app.rubric_extract import MAX_RUBRIC_BYTES, RubricExtractionError
 
@@ -55,6 +56,7 @@ app.add_middleware(
     allow_headers=["Content-Type", "X-LLM-Api-Key"],
 )
 app.include_router(db_router)
+app.include_router(batch_router)
 
 
 class InvalidRepoPathError(Exception):
@@ -166,10 +168,21 @@ def _llm_config(settings: LLMSettings | None, api_key: str | None) -> llm_provid
     )
 
 
+def _scanned_folder(repo_url: str) -> Path | None:
+    try:
+        local = repository.get_local_path(repo_url)
+    except Exception:
+        logger.exception("No se pudo leer la carpeta local del grupo.")
+        return None
+    path = Path(local) if local else None
+    return path if path and (path / ".git").is_dir() else None
+
+
 def _resolve_repo(repo_path: str | None, repo_url: str | None) -> Path:
-    """Prioriza repo_url (clonando/reusando en caché) sobre repo_path local."""
+    """Prioriza repo_url sobre repo_path local. Una URL de un grupo escaneado por lote se
+    resuelve a su carpeta local si todavía existe; si no, se clona o reusa de la caché."""
     if repo_url:
-        resolved = repo_cache.get_or_clone(repo_url)
+        resolved = _scanned_folder(repo_url) or repo_cache.get_or_clone(repo_url)
     else:
         resolved = Path(repo_path)
 
@@ -358,7 +371,7 @@ def _persist_analysis(
         head = max(commits, key=lambda c: c["moment"])["full_hash"] if commits else None
         repository.save_analysis(
             task_id=request.task_id,
-            group_url=request.repo_url or request.repo_path,
+            group_url=request.group_url or request.repo_url or request.repo_path,
             rubric_version=rubric_version,
             rubric_state=state,
             model=response.model_used,

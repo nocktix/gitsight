@@ -65,3 +65,20 @@
   opacity: 0.6;
   cursor: default;
 }
+
+/* Acción secundaria */
+.repo-url-field__secondary {
+  padding: 6px 12px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.repo-url-field__secondary:hover {
+  border-color: var(--color-primary);
+}

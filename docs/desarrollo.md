@@ -19,6 +19,8 @@ gitsight/
 │   │   ├── rubrics.py                  criterios de una rúbrica y comparación entre versiones
 │   │   ├── repository.py, db.py        acceso a datos, esquema y migración de la base
 │   │   ├── routes_db.py                tareas, rúbricas, análisis e importación
+│   │   ├── routes_batch.py             escaneo de una carpeta de repos (análisis por lote)
+│   │   ├── batch.py                    prefijo común, origin y commits de cada repo
 │   │   ├── git_analyzer.py             commits con PyDriller
 │   │   ├── repo_cache.py               repos clonados desde GitHub (caché local)
 │   │   └── config.py                   cuentas excluidas (TID_EXCLUDED_AUTHORS)
@@ -91,6 +93,11 @@ recibe en cada petición (`llm: {provider, model, base_url}` en el cuerpo y la k
   que se encontró.
 - `POST /api/rubric/extract`: recibe un archivo (`.pdf`, `.docx`, `.md`, `.txt`; máx. 5 MB) y devuelve su
   texto. No guarda nada.
+- `POST /api/batch/scan {folder}`: lista los repos de una carpeta (`gh teacher download`), deduce la
+  tarea (prefijo `<classroom>-<tarea>` del `.classroom50.yaml` de cada repo —claves `classroom` y
+  `assignment` en la raíz, esquema `repo-config-v1`—, o el prefijo común de los nombres si falta; `owner/prefijo`, con el owner del `origin`; `local/prefijo` si no hay) y registra los grupos. La
+  clave del grupo es la URL del origin (o la ruta si no hay); `groups.local_path` guarda la carpeta del
+  último escaneo y `_resolve_repo` la usa en vez de clonar. `/api/analyze` acepta `repo_path` + `group_url`.
 - `/api/tasks/...`: tareas, fechas, grupos y versiones de la rúbrica (ver más abajo).
 - `GET /api/analyses?group_url=...`: historial de análisis de un grupo.
 
