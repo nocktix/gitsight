@@ -73,7 +73,7 @@ export default function TriangulationPanel() {
   const [history, setHistory] = useState<StoredAnalysis[]>([]);
   const [editing, setEditing] = useState(false);
   const [rubricInfo, setRubricInfo] = useState<string | null>(null);
-  const { config } = useLlmConfig();
+  const { config, language } = useLlmConfig();
   const controllerRef = useRef<AbortController | null>(null);
   const activeUrl = active?.url;
   /** Qué archivos del repo existen (bitácora y autoría); null mientras se consulta. */
@@ -146,6 +146,7 @@ export default function TriangulationPanel() {
         include_authorship: INCLUDE_AUTHORSHIP,
         task_id: taskId,
         llm,
+        language,
         ...(rubricVersion !== null ? { rubric_version: rubricVersion } : {}),
         ...(taskStart ? { task_start: task.startDate } : {}),
         ...(taskEnd ? { task_deadline: task.endDate } : {}),

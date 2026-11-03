@@ -3,6 +3,8 @@ from typing import Literal
 
 from pydantic import BaseModel, field_validator, model_validator
 
+from app import languages
+
 
 class LLMSettings(BaseModel):
     """Proveedor y modelo elegidos por el evaluador. La API key NO va aquí: viaja en el header
@@ -28,6 +30,13 @@ class AnalyzeRequest(BaseModel):
     task_id: str | None = None  # "owner/prefijo"
     rubric_version: int | None = None  # si no viene, se busca por el texto de la rúbrica
     llm: LLMSettings | None = None  # sin él se usa el respaldo del .env
+    # Idioma en que el LLM escribe los hallazgos (ver app/languages.py).
+    language: str = languages.DEFAULT_LANGUAGE
+
+    @field_validator("language", mode="before")
+    @classmethod
+    def _check_language(cls, value: str | None) -> str:
+        return languages.check_language(value)
 
     @field_validator("task_start", "task_deadline")
     @classmethod
@@ -91,6 +100,7 @@ class AnalyzeResponse(BaseModel):
     repo_analyzed: str
     timestamp: str
     rubric_version: int | None = None  # versión de la rúbrica usada; None = sin rúbrica o texto suelto
+    language: str | None = None  # idioma pedido al LLM; None en análisis anteriores al selector
 
 
 class DiffLine(BaseModel):
@@ -146,6 +156,12 @@ class CommitSummaryRequest(BaseModel):
     repo_url: str
     regenerate: bool = False  # True: vuelve a llamar al LLM y reemplaza el resumen guardado
     llm: LLMSettings | None = None  # sin él se usa el respaldo del .env
+    language: str = languages.DEFAULT_LANGUAGE
+
+    @field_validator("language", mode="before")
+    @classmethod
+    def _check_language(cls, value: str | None) -> str:
+        return languages.check_language(value)
 
 
 class SummaryFile(BaseModel):
@@ -191,3 +207,5 @@ class CommitSummaryResponse(BaseModel):
     message_check: MessageCheck
     stats: SummaryStats
     coverage: SummaryCoverage
+    # Idioma en que se escribió. Los resúmenes guardados antes del selector eran en español.
+    language: str = languages.DEFAULT_LANGUAGE

@@ -1,6 +1,7 @@
 import { useLlmConfig } from "../context/useLlmConfig";
 import { useTour } from "../context/useTour";
 import { useWorkspace } from "../context/useWorkspace";
+import { LANGUAGES, languageLabel } from "../utils/language";
 import { describeConfig } from "../utils/llmConfig";
 import "./TopBar.css";
 
@@ -16,7 +17,7 @@ function formatLoadedAt(date: Date): string {
 export default function TopBar() {
   const { active, commits, taskIds, groups, openGroup, switchTask, pendingUrl } =
     useWorkspace();
-  const { store, config, openSettings } = useLlmConfig();
+  const { store, config, openSettings, language, setLanguage } = useLlmConfig();
   const { start: startTour } = useTour();
 
   return (
@@ -56,6 +57,22 @@ export default function TopBar() {
               {groups.map((group) => (
                 <option key={group.url} value={group.url}>
                   {group.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="top-bar__select" title="Idioma en que responde la IA">
+            <span className="top-bar__select-label">Idioma</span>
+            <span className="top-bar__select-value">{languageLabel(language)}</span>
+            <select
+              aria-label="Idioma"
+              onChange={(event) => setLanguage(event.target.value)}
+              title="Idioma en que responde la IA"
+              value={language}
+            >
+              {LANGUAGES.map((l) => (
+                <option key={l.code} value={l.code}>
+                  {l.label}
                 </option>
               ))}
             </select>

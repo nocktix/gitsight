@@ -21,7 +21,7 @@ const STATUS_TEXT: Record<BatchState["status"], string> = {
 /** "Tarea completa": escanea una carpeta descargada con `gh teacher download` y analiza cada repo. */
 export default function BatchPanel({ onGroupOpened }: { onGroupOpened?: () => void }) {
   const { openGroup, refreshTask, pendingUrl, openError } = useWorkspace();
-  const { config } = useLlmConfig();
+  const { config, language } = useLlmConfig();
   const [folder, setFolder] = useState("");
   const [scan, setScan] = useState<BatchScan | null>(null);
   const [states, setStates] = useState<BatchState[]>([]);
@@ -89,6 +89,7 @@ export default function BatchPanel({ onGroupOpened }: { onGroupOpened?: () => vo
             include_authorship: INCLUDE_AUTHORSHIP,
             task_id: scan.taskId,
             llm,
+            language,
             ...(task.startDate ? { task_start: task.startDate } : {}),
             ...(task.endDate ? { task_deadline: task.endDate } : {}),
           },

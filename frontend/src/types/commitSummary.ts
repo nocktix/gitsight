@@ -13,6 +13,8 @@ export interface CommitSummary {
   created_at: string;
   /** true: venía guardado, el backend no llamó al LLM. */
   cached: boolean;
+  /** Idioma en que se escribió; ausente en resúmenes anteriores al selector (eran en español). */
+  language?: string;
   summary: string;
   main_files: { filename: string; change: string }[];
   message_check: { status: MessageCheckStatus; observation: string };

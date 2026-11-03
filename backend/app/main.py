@@ -22,6 +22,7 @@ from app import (
     alert_checks,
     artifacts,
     git_analyzer,
+    languages,
     llm,
     repo_cache,
     repository,
@@ -304,9 +305,15 @@ def summarize_commit(
 
     if not request.regenerate:
         saved = repository.get_commit_summary(repo_key, commit["hash"])
-        # Con un modelo explícito, el guardado solo sirve si lo generó ese mismo modelo.
-        if saved is not None and (
-            requested_model is None or model_catalog.matches_requested(saved, requested_model)
+        # Con un modelo explícito, el guardado solo sirve si lo generó ese mismo modelo; y
+        # siempre tiene que estar en el idioma pedido (los antiguos, sin idioma, son en español).
+        if (
+            saved is not None
+            and saved.get("language", languages.DEFAULT_LANGUAGE) == request.language
+            and (
+                requested_model is None
+                or model_catalog.matches_requested(saved, requested_model)
+            )
         ):
             return CommitSummaryResponse(**saved, cached=True)
 
@@ -314,7 +321,7 @@ def summarize_commit(
         raise HTTPException(status_code=400, detail="El commit no tiene cambios para resumir.")
 
     result, llm_result = commit_summary.summarize(
-        commit, config=_llm_config(request.llm, x_llm_api_key)
+        commit, config=_llm_config(request.llm, x_llm_api_key), language=request.language
     )
     try:
         created_at = repository.save_commit_summary(
@@ -489,7 +496,9 @@ def analyze(request: AnalyzeRequest, x_llm_api_key: str | None = Header(default=
     if rubric_text and rubric_text.strip():
         sources_used.append("rubric")
 
-    parsed, result = llm.analyze_structured(llm.SYSTEM_PROMPT, user_prompt, config=config)
+    parsed, result = llm.analyze_structured(
+        llm.system_prompt(request.language), user_prompt, config=config
+    )
     parsed["findings"] = alert_checks.verify_alerts(
         parsed["findings"],
         bitacora_commit_hashes=bitacora_commit_hashes,
@@ -543,6 +552,7 @@ def analyze(request: AnalyzeRequest, x_llm_api_key: str | None = Header(default=
         repo_analyzed=str(repo_path),
         timestamp=db.now_iso(),
         rubric_version=rubric_version,
+        language=request.language,
     )
     _persist_analysis(request, commits, response, rubric_version)
     return response

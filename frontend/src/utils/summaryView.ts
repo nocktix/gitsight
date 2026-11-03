@@ -12,6 +12,11 @@ export function messageCheckLabel(status: MessageCheckStatus): string {
   return CHECK_LABELS[status] ?? "No se puede comparar el mensaje con los cambios";
 }
 
+/** ¿El resumen está en el idioma pedido? Los guardados antes del selector no traen idioma: son en español. */
+export function isInLanguage(summary: Pick<CommitSummary, "language">, language: string): boolean {
+  return (summary.language ?? "es") === language;
+}
+
 /** Aviso cuando el LLM solo vio una parte del diff; null si lo vio completo. */
 export function coverageNote(coverage: CommitSummary["coverage"]): string | null {
   if (!coverage.truncated) return null;

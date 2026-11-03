@@ -29,12 +29,13 @@ export async function generateSummary(
   regenerate: boolean,
   llm: LlmSettings,
   apiKey: string,
+  language: string,
   signal?: AbortSignal,
 ): Promise<CommitSummary> {
   const res = await backendFetch(`/api/commits/${commitHash}/summary`, {
     method: "POST",
     headers: llmHeaders(apiKey),
-    body: JSON.stringify({ repo_url: repoUrl, regenerate, llm }),
+    body: JSON.stringify({ repo_url: repoUrl, regenerate, llm, language }),
     signal,
   });
   if (!res.ok) throw await errorFromResponse(res);

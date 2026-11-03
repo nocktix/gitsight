@@ -52,6 +52,8 @@ export interface AnalyzeRequest {
   rubric_version?: number;
   /** Proveedor y modelo elegidos (la API key viaja aparte, en el header X-LLM-Api-Key). */
   llm?: LlmSettings;
+  /** Idioma en que el LLM escribe los hallazgos (es, en); el backend usa es si falta. */
+  language?: string;
 }
 
 export interface AnalyzeResponse {
@@ -69,6 +71,8 @@ export interface AnalyzeResponse {
   timestamp: string;
   /** Versión de la rúbrica usada; null o ausente si no hubo (o es un análisis anterior). */
   rubric_version?: number | null;
+  /** Idioma pedido al LLM; ausente en análisis anteriores al selector. */
+  language?: string;
 }
 
 export interface BackendErrorBody {

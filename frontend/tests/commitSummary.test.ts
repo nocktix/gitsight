@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { generateSummary, getSavedSummary } from "../src/api/commitSummaryClient.ts";
-import { coverageNote, messageCheckLabel, statsLine } from "../src/utils/summaryView.ts";
+import { coverageNote, isInLanguage, messageCheckLabel, statsLine } from "../src/utils/summaryView.ts";
 import { fakeFetch, unreachableFetch } from "./fakeBackend.ts";
 
 const URL_A = "https://github.com/UAICL/tarea02-ana";
@@ -73,4 +73,12 @@ test("etiquetas del mensaje: el genérico no se presenta como 'no coincide'", ()
 test("línea de cantidades", () => {
   assert.equal(statsLine({ files: 1, insertions: 2, deletions: 0 }), "1 archivo · +2 −0 líneas");
   assert.equal(statsLine({ files: 3, insertions: 10, deletions: 4 }), "3 archivos · +10 −4 líneas");
+});
+
+test("un resumen guardado solo es vigente si está en el idioma actual; sin idioma cuenta como español", () => {
+  assert.equal(isInLanguage({ language: "en" }, "en"), true);
+  assert.equal(isInLanguage({ language: "en" }, "es"), false);
+  assert.equal(isInLanguage({ language: "es" }, "en"), false);
+  assert.equal(isInLanguage({}, "es"), true);
+  assert.equal(isInLanguage({}, "en"), false);
 });

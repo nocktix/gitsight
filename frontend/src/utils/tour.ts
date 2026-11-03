@@ -14,7 +14,7 @@ export interface TourStep {
 export const TOUR_STEPS: TourStep[] = [
   {
     title: "Barra superior",
-    text: "Te damos la bienvenida a GitSight. Desde la barra superior cambias de tarea o de grupo, y el botón ? vuelve a mostrar este recorrido cuando quieras.",
+    text: "Te damos la bienvenida a GitSight. Desde la barra superior cambias de tarea o de grupo, eliges el idioma en que responde la IA, y el botón ? vuelve a mostrar este recorrido cuando quieras.",
     selector: '[data-tour="topbar"]',
   },
   {

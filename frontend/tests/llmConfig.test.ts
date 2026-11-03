@@ -112,11 +112,22 @@ test("el análisis manda llm en el body y la key solo en el header", async () =>
   assert.ok(!JSON.stringify(calls[0].body).includes(KEY));
 });
 
+test("el análisis manda el idioma elegido en el body", async () => {
+  const calls = fakeFetch(() => ({ body: {} }));
+  await fetchAnalysis({ ...REQUEST, language: "en" }, "");
+  assert.equal((calls[0].body as { language: string }).language, "en");
+});
+
 test("sin key (Ollama) no viaja el header", async () => {
   const calls = fakeFetch(() => ({ body: {} }));
-  await generateSummary(URL_A, HASH, false, { provider: "ollama", model: "llama3.1" }, "");
+  await generateSummary(URL_A, HASH, false, { provider: "ollama", model: "llama3.1" }, "", "en");
   assert.equal("X-LLM-Api-Key" in calls[0].headers, false);
-  assert.deepEqual(calls[0].body, { repo_url: URL_A, regenerate: false, llm: { provider: "ollama", model: "llama3.1" } });
+  assert.deepEqual(calls[0].body, {
+    repo_url: URL_A,
+    regenerate: false,
+    llm: { provider: "ollama", model: "llama3.1" },
+    language: "en",
+  });
 });
 
 test("probar conexión llama a /api/llm/test con la key en el header", async () => {

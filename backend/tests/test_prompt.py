@@ -23,16 +23,16 @@ def _prompt(**over):
 
 def test_tag_order_and_defaults():
     p = _prompt()
-    tags = ["<rubrica>", "<tarea>", "<commits>", "<bitacora_prompts>", "<autoria>"]
+    tags = ["<rubric>", "<task>", "<commits>", "<prompt_log>", "<authorship>"]
     assert [p.index(t) for t in tags] == sorted(p.index(t) for t in tags)
     assert llm.NO_RUBRIC_TEXT in p
-    assert "Autores con commits en el repositorio (excluye bots y equipo docente): ana, beto" in p
-    assert "Fecha de entrega: no informada." in p
+    assert "Authors with commits in the repository (excluding bots and teaching staff): ana, beto" in p
+    assert "Deadline: not provided." in p
 
 
 def test_system_prompt_has_extra_alert_rule():
-    line = 'Si un caso no calza claramente en "alert", clasifícalo como "discrepancy".'
-    extra = 'Cualquier otro patrón llamativo, como un commit con muchas líneas, se clasifica como "discrepancy" o "info", nunca como "alert".'
+    line = 'If a case does not clearly fit "alert", classify it as "discrepancy".'
+    extra = 'Any other striking pattern, such as a commit with many lines, is classified as "discrepancy" or "info", never as "alert".'
     lines = [l.strip(" -") for l in llm.SYSTEM_PROMPT.split("\n")]
     assert lines[lines.index(line) + 1] == extra
 
@@ -118,9 +118,27 @@ def test_non_alert_has_null_alert_case():
 def test_prompt_lists_alert_codes_and_precomputed_rule():
     for code in ("declarado_sin_commits", "commits_sin_declaracion", "commits_tardios", "bitacora_un_commit", "texto_dirigido"):
         assert f'- "{code}":' in llm.SYSTEM_PROMPT
-    assert "Usa las cantidades que vienen calculadas en <commits>; no las recalcules." in llm.SYSTEM_PROMPT
-    assert "Cada criterio de la rúbrica debe aparecer en al menos un hallazgo" in llm.SYSTEM_PROMPT
-    assert "No agregues conclusiones después del hecho" in llm.SYSTEM_PROMPT
+    assert "Use the quantities already computed in <commits>; do not recompute them." in llm.SYSTEM_PROMPT
+    assert "Every rubric criterion must appear in at least one finding" in llm.SYSTEM_PROMPT
+    assert "Do not add conclusions after the fact" in llm.SYSTEM_PROMPT
+
+
+@pytest.mark.parametrize("code,name", [(None, "Spanish"), ("es", "Spanish"), ("en", "English")])
+def test_system_prompt_ends_with_the_reviewer_language(code, name):
+    prompt = llm.system_prompt(code)
+    assert prompt.startswith(llm.SYSTEM_PROMPT)
+    assert prompt.endswith(f"\n\nProduce the answer in {name}.")
+
+
+def test_analyze_request_only_accepts_known_languages():
+    from pydantic import ValidationError
+
+    from app.models import AnalyzeRequest
+
+    assert AnalyzeRequest(repo_url="x").language == "es"
+    assert AnalyzeRequest(repo_url="x", language="en").language == "en"
+    with pytest.raises(ValidationError):
+        AnalyzeRequest(repo_url="x", language="Klingon")
 
 
 def test_commit_stats_and_format():
@@ -135,14 +153,14 @@ def test_commit_stats_and_format():
     assert stats == {"files": 3, "added_files": 1, "modified_files": 1, "deleted_files": 1,
                      "renamed_files": 0, "insertions": 13, "deletions": 11}
     text = format_commits_for_prompt([{"hash": "abc", "author": "x", "date": "d", "message": "m", "files": files, "stats": stats}])
-    assert "Cantidades: 3 archivos (1 agregados, 1 modificados, 1 eliminados); líneas: +13 -11" in text
+    assert "Counts: 3 files (1 added, 1 modified, 1 deleted); lines: +13 -11" in text
 
 
 def test_task_has_commit_counts_and_bitacora_commits():
     p = _prompt()
-    assert "Commits: 8 de trabajo y 1 de merge" in p
-    assert "Commits que agregan o modifican la bitácora de prompts: 2 (0fc53ea, c2713eb)" in p
-    assert "bitácora de prompts: 0\n" in _prompt(bitacora_commits=[]) + "\n"
+    assert "Commits: 8 work and 1 merge" in p
+    assert "Commits that add or modify the prompt log: 2 (0fc53ea, c2713eb)" in p
+    assert "prompt log: 0\n" in _prompt(bitacora_commits=[]) + "\n"
 
 
 # --- verificación de alertas calculables ---

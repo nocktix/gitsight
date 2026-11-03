@@ -9,6 +9,9 @@ export interface LlmConfigValue {
   settingsOpen: boolean;
   openSettings: () => void;
   closeSettings: () => void;
+  /** Idioma en que responde la IA (código: es, en). */
+  language: string;
+  setLanguage: (code: string) => void;
 }
 
 export const LlmConfigContext = createContext<LlmConfigValue | null>(null);

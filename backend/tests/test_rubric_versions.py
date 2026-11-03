@@ -219,7 +219,7 @@ def test_task_without_rubric_saves_state_none(client, analyze_env):
     _analyze(client)
     row = _saved(client)
     assert (row["rubric_version"], row["rubric_state"]) == (None, "none")
-    assert "No se proporcionó rúbrica" in analyze_env["prompt"]
+    assert "No rubric was provided" in analyze_env["prompt"]
 
 
 def test_loose_text_that_matches_no_version_is_unknown_never_invented(client, analyze_env):

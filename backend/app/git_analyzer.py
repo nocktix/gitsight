@@ -267,11 +267,11 @@ def format_commits_for_prompt(commits: list[dict]) -> str:
             f"{commit['date']} | \"{commit['message']}\""
         )
         st = commit["stats"]
-        renamed = f", {st['renamed_files']} renombrados" if st["renamed_files"] else ""
+        renamed = f", {st['renamed_files']} renamed" if st["renamed_files"] else ""
         lines.append(
-            f"    Cantidades: {st['files']} archivos ({st['added_files']} agregados, "
-            f"{st['modified_files']} modificados, {st['deleted_files']} eliminados{renamed}); "
-            f"líneas: +{st['insertions']} -{st['deletions']}"
+            f"    Counts: {st['files']} files ({st['added_files']} added, "
+            f"{st['modified_files']} modified, {st['deleted_files']} deleted{renamed}); "
+            f"lines: +{st['insertions']} -{st['deletions']}"
         )
         for file in commit["files"]:
             lines.append(

@@ -4,7 +4,7 @@ import { BackendError } from "../api/http";
 import { useLlmConfig } from "../context/useLlmConfig";
 import type { CommitSummary as Summary } from "../types/commitSummary";
 import { formatSantiago } from "../utils/analysisHistory";
-import { coverageNote, messageCheckLabel, statsLine } from "../utils/summaryView";
+import { coverageNote, isInLanguage, messageCheckLabel, statsLine } from "../utils/summaryView";
 import { llmRequest } from "../utils/llmConfig";
 import LlmErrorRetry from "./LlmErrorRetry";
 import LlmNotConfigured from "./LlmNotConfigured";
@@ -27,7 +27,9 @@ export default function CommitSummary({
   const [checking, setChecking] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  const { config } = useLlmConfig();
+  const { config, language } = useLlmConfig();
+  // Un resumen guardado en otro idioma no es el vigente: se ofrece generarlo en el idioma actual.
+  const current = summary && isInLanguage(summary, language) ? summary : null;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -49,19 +51,19 @@ export default function CommitSummary({
     const { llm, apiKey } = llmRequest(config);
     setBusy(true);
     setError(null);
-    generateSummary(repoUrl, commitHash, regenerate, llm, apiKey)
+    generateSummary(repoUrl, commitHash, regenerate, llm, apiKey, language)
       .then(setSummary)
       .catch((err: Error) => setError(err))
       .finally(() => setBusy(false));
   }
 
-  const note = summary ? coverageNote(summary.coverage) : null;
+  const note = current ? coverageNote(current.coverage) : null;
 
   return (
     <section className="commit-summary">
       <div className="commit-summary__header">
         <h3 className="commit-summary__title">Resumen con IA</h3>
-        {summary && (
+        {current && (
           <button disabled={busy || !config} onClick={() => run(true)} type="button">
             {busy ? "Regenerando..." : "Regenerar"}
           </button>
@@ -70,9 +72,9 @@ export default function CommitSummary({
 
       {checking && <p className="commit-summary__status">Buscando resumen guardado...</p>}
 
-      {!checking && !summary && !config && <LlmNotConfigured className="commit-summary__status" />}
+      {!checking && !current && !config && <LlmNotConfigured className="commit-summary__status" />}
 
-      {!checking && !summary && config && (
+      {!checking && !current && config && (
         <button
           className="commit-summary__primary"
           disabled={busy}
@@ -90,7 +92,7 @@ export default function CommitSummary({
             code={error.code}
             failedModel={error.modelAttempted}
             message={error.message}
-            onRetry={() => run(summary !== null)}
+            onRetry={() => run(current !== null)}
           />
         ) : (
           <p className="commit-summary__error" role="alert">
@@ -98,17 +100,17 @@ export default function CommitSummary({
           </p>
         ))}
 
-      {summary && (
+      {current && (
         <>
           <p className="commit-summary__meta">
-            {summary.model} · {formatSantiago(summary.created_at)} (hora de Chile) ·{" "}
-            {statsLine(summary.stats)}
+            {current.model} · {formatSantiago(current.created_at)} (hora de Chile) ·{" "}
+            {statsLine(current.stats)}
           </p>
           {note && <p className="commit-summary__note">{note}</p>}
-          <p className="commit-summary__text">{summary.summary}</p>
-          {summary.main_files.length > 0 && (
+          <p className="commit-summary__text">{current.summary}</p>
+          {current.main_files.length > 0 && (
             <ul className="commit-summary__files">
-              {summary.main_files.map((file) => (
+              {current.main_files.map((file) => (
                 <li key={file.filename}>
                   <code>{file.filename}</code>: {file.change}
                 </li>
@@ -116,8 +118,8 @@ export default function CommitSummary({
             </ul>
           )}
           <p className="commit-summary__check">
-            <strong>{messageCheckLabel(summary.message_check.status)}.</strong>{" "}
-            {summary.message_check.observation}
+            <strong>{messageCheckLabel(current.message_check.status)}.</strong>{" "}
+            {current.message_check.observation}
           </p>
         </>
       )}

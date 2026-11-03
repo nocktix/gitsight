@@ -99,7 +99,7 @@ def test_prompt_numbers_artifact_lines():
 
 
 def test_system_prompt_explains_evidence():
-    assert "[EVIDENCIA]" in llm.SYSTEM_PROMPT
+    assert "[EVIDENCE]" in llm.SYSTEM_PROMPT
     for t in ('"type": "commit"', '"type": "prompt_log"', '"type": "authorship"', "no_evidence_needed"):
         assert t in llm.SYSTEM_PROMPT
 

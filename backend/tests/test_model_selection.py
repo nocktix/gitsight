@@ -51,10 +51,12 @@ class FakeProvider:
         self.failing = set(failing)
         self.text = text if text is not None else json.dumps(VALID)
         self.called: list[str] = []
+        self.system_prompts: list[str] = []
 
     def __call__(self, config, system_prompt, user_prompt):
         model = config.model
         self.called.append(model)
+        self.system_prompts.append(system_prompt)
         if model in self.failing:
             raise LLMError("provider_error", model_attempted=model)
         return llm.AnalysisResult(self.text, model, 1, 1, 2)
@@ -153,6 +155,21 @@ def test_analyze_with_model_uses_only_that_model(analyze_client, provider):
     assert r.status_code == 200
     assert provider.called == ["m/c"]
     assert r.json()["model_used"] == "m/c"
+
+
+@pytest.mark.parametrize("body,name", [({}, "Spanish"), ({"language": "en"}, "English")])
+def test_analyze_ends_the_prompt_with_the_reviewer_language(analyze_client, provider, body, name):
+    r = analyze_client.post("/api/analyze", json={"repo_url": URL, **body})
+    assert r.status_code == 200
+    assert provider.system_prompts[-1].endswith(f"\n\nProduce the answer in {name}.")
+    assert r.json()["language"] == (body.get("language") or "es")
+
+
+@pytest.mark.parametrize("code", ["fr", "pt"])
+def test_analyze_rejects_unknown_language(analyze_client, provider, code):
+    r = analyze_client.post("/api/analyze", json={"repo_url": URL, "language": code})
+    assert r.status_code == 422
+    assert provider.called == []
 
 
 def test_analyze_with_failing_model_is_502_naming_the_model(analyze_client, provider):

@@ -129,6 +129,8 @@ botón **Modelo de IA** (engranaje) de la barra superior.
 
 ![Ventana para configurar el modelo de IA](docs/img/06-modelo-ia.png)
 
+**Idioma de la respuesta.** El selector **Idioma** de la barra superior (Español, English) define en qué idioma escribe la IA los hallazgos y los resúmenes de commit; se recuerda en este navegador y por defecto es español.
+
 1. Elige el **proveedor**.
 2. Elige o escribe el **modelo** (cada proveedor muestra un ejemplo).
 3. Pega tu **API key** (la clave que te da el proveedor; ver la tabla).
