@@ -25,7 +25,8 @@
 8. [Privacidad](#8-privacidad)
 9. [Solución de problemas](#9-solución-de-problemas)
 10. [Contexto académico](#10-contexto-académico)
-11. [Licencia](#11-licencia)
+11. [Cómo está construido](#11-cómo-está-construido)
+12. [Licencia](#12-licencia)
 
 Si vas a modificar el código, mira la [guía de desarrollo](docs/desarrollo.md).
 
@@ -468,6 +469,131 @@ GitSight nace en el **Proyecto de Investigación Dirigida (TID)** de la **Univer
 - **Profesor guía:** _[completar: nombre del profesor o profesora guía]_
 - **Cómo citar:** _[completar: formato de cita; por ejemplo, Apellido, N. (año). GitSight [software]. Universidad Adolfo Ibáñez. https://github.com/nocktix/gitsight]_
 
-## 11. Licencia
+## 11. Cómo está construido
+
+Los diagramas se generan a partir del código (`backend/app`, `frontend/src`) y GitHub los dibuja
+directamente. La guía para modificar el código está en [docs/desarrollo.md](docs/desarrollo.md).
+
+### 11.1 Componentes
+
+El frontend corre en tu navegador y habla con un backend local. Solo el backend toca git, la base de datos
+y el proveedor de IA; la clave de IA viaja en un header y no se guarda en el servidor.
+
+```mermaid
+flowchart LR
+  subgraph NAV["Navegador (React + Vite)"]
+    UI["Pantallas<br/>WelcomeScreen, RepoUrlField,<br/>BatchPanel, TriangulationPanel"]
+    CTX["Contextos<br/>WorkspaceContext, LlmConfigContext"]
+    CLI["Clientes de la API<br/>src/api/*"]
+    LS[("localStorage<br/>modelo y API key")]
+    UI --> CTX --> CLI
+    CTX -.-> LS
+  end
+
+  subgraph BACK["Backend (FastAPI)"]
+    MAIN["main.py<br/>commits, diff, artefactos,<br/>análisis, resúmenes"]
+    RDB["routes_db.py<br/>tareas, rúbricas, análisis"]
+    RBATCH["routes_batch.py"]
+    BATCH["batch.py<br/>prefijo, origin, commits"]
+    GA["git_analyzer.py<br/>PyDriller"]
+    RC["repo_cache.py<br/>clones en ~/.tid-cache"]
+    ART["artifacts.py + alert_checks.py<br/>bitácora, autoría, alertas"]
+    LLM["llm.py<br/>prompt y reintento"]
+    EV["evidence.py<br/>valida la evidencia"]
+    PROV["llm_providers.py<br/>+ model_catalog.py"]
+    CS["commit_summary.py"]
+    RUB["rubrics.py + rubric_extract.py"]
+    REPO["repository.py + db.py"]
+    MAIN --> RC & GA & ART & LLM & CS & RUB & REPO
+    RDB --> REPO & RUB
+    RBATCH --> BATCH & REPO
+    LLM --> PROV & EV
+    CS --> LLM
+  end
+
+  DB[("SQLite<br/>data/tid.db")]
+  GIT[["git<br/>repos locales"]]
+  GH(["GitHub"])
+  AI(["Proveedor de IA<br/>OpenRouter, OpenAI, Anthropic,<br/>Gemini, Groq, DeepSeek, Ollama, otro"])
+  DISK[/"Carpeta descargada con<br/>gh teacher download"/]
+
+  CLI -- "HTTP /api/*" --> MAIN
+  CLI -- "HTTP /api/*" --> RDB
+  CLI -- "HTTP /api/batch/scan" --> RBATCH
+  REPO --> DB
+  RC -- "git clone" --> GH
+  RC --> GIT
+  GA --> GIT
+  BATCH -- "origin, rev-list" --> GIT
+  BATCH --> DISK
+  PROV -- "HTTPS" --> AI
+```
+
+### 11.2 Modelo de datos
+
+Tarea, Grupo, VersionRubrica y Analisis son tablas de SQLite (`backend/app/db.py`). Hallazgo no tiene
+tabla propia: vive dentro del resultado de cada análisis (`analyses.result_json`, forma `AnalyzeResponse` en
+`models.py`). Los nombres de las clases van sin tildes por compatibilidad con Mermaid.
+
+```mermaid
+classDiagram
+  direction LR
+  class Tarea {
+    +String id  "owner/prefijo"
+    +String start_date
+    +String end_date
+  }
+  class Grupo {
+    +String url  "URL del origin o ruta"
+    +String name
+    +String local_path  "carpeta del último escaneo"
+  }
+  class VersionRubrica {
+    +int version
+    +String content
+    +String created_at
+    +String filename
+    +String note
+    +bool active  "una por tarea"
+  }
+  class Analisis {
+    +int id
+    +String group_url
+    +int rubric_version
+    +String rubric_state  "version | none | unknown"
+    +String model
+    +String head_commit
+    +String created_at
+    +String result_json
+  }
+  class Hallazgo {
+    +String type  "info | discrepancy | alert"
+    +String criterion
+    +String alert_case
+    +String title
+    +String description
+    +Evidencia[] evidence
+    +bool no_evidence_needed
+  }
+  Tarea "1" *-- "0..*" Grupo : tiene
+  Tarea "1" *-- "0..*" VersionRubrica : versiona
+  Tarea "1" o-- "0..*" Analisis : task_id
+  Grupo "1" o-- "0..*" Analisis : group_url
+  Analisis "0..*" ..> "0..1" VersionRubrica : rubric_version
+  Analisis "1" *-- "0..*" Hallazgo : result_json
+```
+
+Notas sobre las relaciones:
+
+- Un grupo pertenece a una sola tarea, y su clave es la URL del `origin` (la misma que usa el flujo por URL);
+  `local_path` solo guarda dónde está la copia descargada y cambia en cada descarga.
+- Las rúbricas nunca se sobrescriben: editar crea una versión nueva, y solo una está activa por tarea.
+- `Analisis.group_url` y `Analisis.rubric_version` son referencias por valor, sin llave foránea: un
+  análisis conserva su historia aunque cambie la rúbrica activa. `rubric_state` distingue "usó la versión N",
+  "no usó rúbrica" y "usó una, pero no se sabe cuál".
+- Una evidencia de un hallazgo es un commit (hash completo) o un rango de líneas de la bitácora o de la
+  autoría, y el backend la valida contra el repositorio antes de guardarla.
+
+## 12. Licencia
 
 _[Pendiente: elegir la licencia del proyecto y agregar el archivo `LICENSE`.]_

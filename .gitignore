@@ -53,3 +53,6 @@ CLAUDE.md
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Salida generada por graphify (no va en el repo)
+graphify-out/
