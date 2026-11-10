@@ -533,68 +533,72 @@ flowchart LR
 
 ### 11.2 Modelo de datos
 
-Tarea, Grupo, VersionRubrica y Analisis son tablas de SQLite (`backend/app/db.py`). Hallazgo no tiene
-tabla propia: vive dentro del resultado de cada análisis (`analyses.result_json`, forma `AnalyzeResponse` en
-`models.py`). Los nombres de las clases van sin tildes por compatibilidad con Mermaid.
+Las tablas son de SQLite y están definidas en `backend/app/db.py`.
 
 ```mermaid
-classDiagram
-  direction LR
-  class Tarea {
-    +String id  "owner/prefijo"
-    +String start_date
-    +String end_date
+erDiagram
+  tasks ||--o{ groups : "tiene"
+  tasks ||--o{ rubrics : "versiona"
+  tasks ||--o{ analyses : "agrupa"
+  groups |o..o{ analyses : "group_url"
+  rubrics |o..o{ analyses : "rubric_version"
+
+  tasks {
+    TEXT id PK "owner/prefijo"
+    TEXT start_date
+    TEXT end_date
   }
-  class Grupo {
-    +String url  "URL del origin o ruta"
-    +String name
-    +String local_path  "carpeta del último escaneo"
+  groups {
+    TEXT url PK "URL del origin o ruta local"
+    TEXT task_id FK
+    TEXT name
+    TEXT local_path
   }
-  class VersionRubrica {
-    +int version
-    +String content
-    +String created_at
-    +String filename
-    +String note
-    +bool active  "una por tarea"
+  rubrics {
+    INTEGER id PK
+    TEXT task_id FK
+    INTEGER version
+    TEXT content
+    TEXT created_at
+    TEXT filename
+    TEXT note
+    INTEGER active
   }
-  class Analisis {
-    +int id
-    +String group_url
-    +int rubric_version
-    +String rubric_state  "version | none | unknown"
-    +String model
-    +String head_commit
-    +String created_at
-    +String result_json
+  analyses {
+    INTEGER id PK
+    TEXT task_id FK
+    TEXT group_url FK
+    INTEGER rubric_version FK
+    TEXT rubric_state
+    TEXT model
+    TEXT head_commit
+    TEXT created_at
+    TEXT result_json
   }
-  class Hallazgo {
-    +String type  "info | discrepancy | alert"
-    +String criterion
-    +String alert_case
-    +String title
-    +String description
-    +Evidencia[] evidence
-    +bool no_evidence_needed
+  commit_summaries {
+    INTEGER id PK
+    TEXT repo_url
+    TEXT commit_hash
+    TEXT model
+    TEXT result_json
+    TEXT created_at
+    TEXT requested_model
   }
-  Tarea "1" *-- "0..*" Grupo : tiene
-  Tarea "1" *-- "0..*" VersionRubrica : versiona
-  Tarea "1" o-- "0..*" Analisis : task_id
-  Grupo "1" o-- "0..*" Analisis : group_url
-  Analisis "0..*" ..> "0..1" VersionRubrica : rubric_version
-  Analisis "1" *-- "0..*" Hallazgo : result_json
 ```
 
-Notas sobre las relaciones:
+Cómo leer el diagrama:
 
-- Un grupo pertenece a una sola tarea, y su clave es la URL del `origin` (la misma que usa el flujo por URL);
-  `local_path` solo guarda dónde está la copia descargada y cambia en cada descarga.
-- Las rúbricas nunca se sobrescriben: editar crea una versión nueva, y solo una está activa por tarea.
-- `Analisis.group_url` y `Analisis.rubric_version` son referencias por valor, sin llave foránea: un
-  análisis conserva su historia aunque cambie la rúbrica activa. `rubric_state` distingue "usó la versión N",
-  "no usó rúbrica" y "usó una, pero no se sabe cuál".
-- Una evidencia de un hallazgo es un commit (hash completo) o un rango de líneas de la bitácora o de la
-  autoría, y el backend la valida contra el repositorio antes de guardarla.
+- **PK** = llave primaria; **FK** = llave foránea.
+- Línea sólida = FK con restricción en la base de datos (`REFERENCES`). Línea punteada = referencia sin restricción.
+- Patas de gallo: `||` exactamente uno, `|o` cero o uno, `o{` cero o muchos.
+
+Notas sobre las tablas:
+
+- Un grupo pertenece a una sola tarea. Su clave es la URL del `origin` (la misma que usa el flujo por URL); `local_path` solo guarda dónde está la copia descargada y cambia en cada descarga.
+- Las rúbricas nunca se sobrescriben: editar crea una versión nueva (`UNIQUE` en `task_id` + `version`) y solo una está activa por tarea.
+- `analyses.group_url` y `analyses.rubric_version` van sin FK a propósito, para que un análisis conserve su historia aunque cambie la rúbrica activa. `rubric_state` distingue "usó la versión N", "no usó rúbrica" y "usó una, pero no se sabe cuál". Además, `analyses.rubric_version` identifica la versión junto con `analyses.task_id` (la versión N de esa tarea); el diagrama la muestra como una FK simple porque Mermaid no dibuja claves compuestas.
+- Los hallazgos no tienen tabla propia: se guardan como JSON en `analyses.result_json`. Cada uno tiene un tipo (`info`, `discrepancy` o `alert`) y su evidencia: un commit (con su hash completo) o un rango de líneas de la bitácora o de la autoría. El backend valida cada evidencia contra el repositorio antes de guardarla.
+- `commit_summaries` es una caché de los resúmenes con IA de cada commit, uno por repositorio y commit (`UNIQUE` en `repo_url` + `commit_hash`). No se relaciona con las otras tablas.
 
 ## 12. Licencia
 
