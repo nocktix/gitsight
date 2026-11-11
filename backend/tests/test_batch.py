@@ -359,3 +359,173 @@ def test_marker_matches_folder_names_ignoring_case(client, tmp_path):
     assert body["task_id"] == f"{ORG}/poo-2026-tarea01"
     assert [g["name"] for g in body["groups"]] == ["ana-x", "ana-y"]
     assert body["warnings"] == []
+
+
+# --- .zip ---------------------------------------------------------------------------------
+
+
+import os
+import stat
+import time
+import zipfile
+
+from app import batch_zip, repo_cache
+
+
+@pytest.fixture(autouse=True)
+def zip_cache(tmp_path, monkeypatch):
+    """La caché de zips va a una carpeta temporal, nunca a ~/.tid-cache."""
+    monkeypatch.setattr(repo_cache, "CACHE_ROOT", tmp_path / "cache" / "repos")
+    return tmp_path / "cache" / "zips"
+
+
+def _zip_dir(src: Path, dest: Path, prefix: str = "", skip_git: bool = False) -> Path:
+    """Comprime `src` en `dest`; `prefix` es la carpeta que envuelve el contenido dentro del zip."""
+    with zipfile.ZipFile(dest, "w") as zf:
+        for f in sorted(src.rglob("*")):
+            rel = f.relative_to(src)
+            if skip_git and ".git" in rel.parts:
+                continue
+            if f.is_file():
+                zf.write(f, str(Path(prefix) / rel) if prefix else str(rel))
+    return dest
+
+
+def test_zip_with_the_whole_folder_inside(client, tmp_path):
+    root = _download(tmp_path, "src")
+    z = _zip_dir(root, tmp_path / "tarea.zip", prefix="classroom50-tarea01")
+    r = _scan(client, z)
+    assert r.status_code == 200
+    body = r.json()
+    assert body["task_id"] == f"{ORG}/classroom50-tarea01"
+    assert [g["name"] for g in body["groups"]] == ["ana", "beto-gomez"]
+    assert [g["commits"] for g in body["groups"]] == [2, 3]
+    assert all(str(batch_zip.zips_root()) in g["path"] for g in body["groups"])
+
+
+def test_zip_with_the_folder_directly_in_the_root(client, tmp_path):
+    root = _download(tmp_path, "src")
+    r = _scan(client, _zip_dir(root, tmp_path / "tarea.zip"))
+    assert r.status_code == 200 and len(r.json()["groups"]) == 2
+
+
+def test_one_zip_per_repo_mixed_with_folders(client, tmp_path):
+    root = tmp_path / "d"
+    root.mkdir()
+    _repo(root, "classroom50-tarea01-ana")
+    bare = _repo(tmp_path / "x", "classroom50-tarea01-beto")  # repo en la raíz del zip
+    _zip_dir(bare, root / "classroom50-tarea01-beto.zip")
+    wrapped = _repo(tmp_path / "y", "classroom50-tarea01-carla")  # repo dentro de una subcarpeta
+    _zip_dir(wrapped, root / "carla.zip", prefix="classroom50-tarea01-carla")
+    r = _scan(client, root)
+    assert r.status_code == 200
+    body = r.json()
+    assert body["warnings"] == []
+    assert [g["name"] for g in body["groups"]] == ["ana", "beto", "carla"]
+    assert body["task_id"] == f"{ORG}/classroom50-tarea01"
+
+
+def test_repo_at_the_zip_root_is_named_after_the_zip_not_the_cache_folder(tmp_path):
+    bare = _repo(tmp_path / "x", "contenido")
+    z = _zip_dir(bare, tmp_path / "classroom50-tarea01-ana.zip")
+    repos, _ = batch.scan_source(str(z))
+    assert [r.folder for r in repos] == ["classroom50-tarea01-ana"]
+    assert "-" + repos[0].path.rsplit("-", 1)[-1] not in repos[0].folder  # sin el hash de la caché
+    assert repos[0].path.startswith(str(batch_zip.zips_root().resolve()))
+
+
+def test_zip_without_git_is_skipped_with_a_warning(client, tmp_path):
+    root = tmp_path / "d"
+    root.mkdir()
+    _repo(root, "classroom50-tarea01-ana")
+    src = _repo(tmp_path / "x", "classroom50-tarea01-beto")
+    _zip_dir(src, root / "classroom50-tarea01-beto.zip", skip_git=True)  # como "Download ZIP"
+    body = _scan(client, root).json()
+    assert [g["name"] for g in body["groups"]] == ["ana"]
+    (warning,) = body["warnings"]
+    assert "classroom50-tarea01-beto.zip" in warning
+    assert "historial de commits" in warning and "gh teacher download" in warning
+
+
+def test_corrupt_zip_is_skipped_with_a_warning(client, tmp_path):
+    root = tmp_path / "d"
+    root.mkdir()
+    _repo(root, "classroom50-tarea01-ana")
+    (root / "roto.zip").write_text("esto no es un zip")
+    body = _scan(client, root).json()
+    assert len(body["groups"]) == 1
+    assert "roto.zip" in body["warnings"][0] and "dañado" in body["warnings"][0]
+
+
+def test_path_to_a_zip_without_repos_is_a_400(client, tmp_path):
+    src = _repo(tmp_path / "x", "r")
+    nogit = _zip_dir(src, tmp_path / "descarga.zip", skip_git=True)
+    r = _scan(client, nogit)
+    assert r.status_code == 400
+    assert "historial de commits" in r.json()["detail"] and "gh teacher download" in r.json()["detail"]
+    broken = tmp_path / "roto.zip"
+    broken.write_text("no es un zip")
+    r = _scan(client, broken)
+    assert r.status_code == 400 and "dañado" in r.json()["detail"]
+
+
+def test_folder_and_zip_of_the_same_repo_use_the_folder_and_warn(client, tmp_path):
+    root = tmp_path / "d"
+    root.mkdir()
+    _repo(root, "classroom50-tarea01-ana", commits=2)
+    other = _repo(tmp_path / "x", "classroom50-tarea01-ana", commits=5)
+    _zip_dir(other, root / "classroom50-tarea01-ana.zip")
+    body = _scan(client, root).json()
+    assert [g["commits"] for g in body["groups"]] == [2]
+    assert "se usó la carpeta" in body["warnings"][0]
+
+
+def test_zip_cache_is_reused_and_reextracted_when_the_zip_changes(tmp_path, zip_cache):
+    src = _repo(tmp_path / "x", "classroom50-tarea01-ana")
+    z = _zip_dir(src, tmp_path / "r.zip")
+    first = batch_zip.extract(z)
+    marker = first / "marca.txt"
+    marker.write_text("sigue aquí")
+    assert batch_zip.extract(z) == first and marker.exists()  # se reutiliza
+    (src / "nuevo.txt").write_text("cambio")
+    _zip_dir(src, z)
+    os.utime(z, ns=(time.time_ns(), time.time_ns() + 5_000_000_000))
+    second = batch_zip.extract(z)
+    assert second != first and (second / "nuevo.txt").exists()
+
+
+def test_extraction_does_not_leave_temp_folders_nor_touch_the_zip(tmp_path, zip_cache):
+    src = _repo(tmp_path / "x", "r")
+    z = _zip_dir(src, tmp_path / "r.zip")
+    before = z.read_bytes()
+    batch_zip.extract(z)
+    assert z.read_bytes() == before
+    assert [p.name for p in zip_cache.iterdir() if p.name.startswith(".tmp-")] == []
+
+
+def test_zip_slip_and_symlinks_do_not_write_outside_the_destination(tmp_path, zip_cache):
+    z = tmp_path / "malo.zip"
+    with zipfile.ZipFile(z, "w") as zf:
+        zf.writestr("../escapado.txt", "no debe salir")
+        zf.writestr("/abs/escapado2.txt", "no debe salir")
+        zf.writestr("repo/ok.txt", "bien")
+        zf.writestr("__MACOSX/repo/._ok.txt", "basura")
+        zf.writestr("repo/.DS_Store", "basura")
+        link = zipfile.ZipInfo("repo/enlace")
+        link.external_attr = (stat.S_IFLNK | 0o777) << 16
+        zf.writestr(link, "/etc/passwd")
+    dest = batch_zip.extract(z)
+    assert not (tmp_path / "escapado.txt").exists() and not (zip_cache / "escapado.txt").exists()
+    assert not Path("/abs/escapado2.txt").exists()
+    names = sorted(str(p.relative_to(dest)) for p in dest.rglob("*") if p.is_file())
+    assert names == ["repo/ok.txt"]
+
+
+def test_zip_over_the_size_cap_is_rejected_and_leaves_no_cache(tmp_path, zip_cache, monkeypatch):
+    monkeypatch.setattr(batch_zip, "MAX_UNZIPPED_BYTES", 10)
+    z = tmp_path / "grande.zip"
+    with zipfile.ZipFile(z, "w") as zf:
+        zf.writestr("a.txt", "x" * 100)
+    with pytest.raises(batch_zip.ZipProblem):
+        batch_zip.extract(z)
+    assert not any(p.is_dir() and not p.name.startswith(".tmp-") for p in zip_cache.iterdir())

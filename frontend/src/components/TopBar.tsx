@@ -1,3 +1,4 @@
+import { useBatch } from "../context/useBatch";
 import { useLlmConfig } from "../context/useLlmConfig";
 import { useTour } from "../context/useTour";
 import { useWorkspace } from "../context/useWorkspace";
@@ -19,6 +20,7 @@ export default function TopBar() {
     useWorkspace();
   const { store, config, openSettings, language, setLanguage } = useLlmConfig();
   const { start: startTour } = useTour();
+  const { scan, running, finished, analyzable, openDialog } = useBatch();
 
   return (
     <header className="top-bar" data-tour="topbar">
@@ -77,6 +79,21 @@ export default function TopBar() {
               ))}
             </select>
           </label>
+          {scan && (
+            <button
+              className="top-bar__gear"
+              onClick={openDialog}
+              title="Abrir la ventana del análisis por lote"
+              type="button"
+            >
+              <span>Ver lote</span>
+              {running && (
+                <span className="batch__badge">
+                  {finished}/{analyzable}
+                </span>
+              )}
+            </button>
+          )}
           <button
             aria-label="Configurar modelo de IA"
             className={`top-bar__gear${config ? "" : " top-bar__gear--pending"}`}

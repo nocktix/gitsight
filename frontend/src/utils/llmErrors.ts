@@ -4,6 +4,7 @@ export const LLM_ERROR_CODES = [
   "llm_not_configured",
   "invalid_api_key",
   "no_credit_or_rate_limit",
+  "rate_limited",
   "model_not_found",
   "provider_unreachable",
   "timeout",
@@ -31,7 +32,9 @@ export function friendlyLlmError(code: string | null, model: string | null, fall
     case "invalid_api_key":
       return "La clave (API key) no es válida o no tiene permiso. Revísala o crea una nueva en la página de tu proveedor.";
     case "no_credit_or_rate_limit":
-      return "Tu proveedor indica que no queda crédito o que se alcanzó el límite de uso. Espera un momento, recarga saldo o prueba con otro modelo o proveedor.";
+      return "Tu proveedor indica que no queda crédito o que se agotó la cuota de uso. Recarga saldo o prueba con otro modelo o proveedor.";
+    case "rate_limited":
+      return "El proveedor pidió esperar: se alcanzó su límite de pedidos por minuto. Espera un momento y vuelve a intentarlo.";
     case "model_not_found":
       return `El proveedor no reconoce el modelo${which}. Revisa que el nombre esté bien escrito o elige otro.`;
     case "provider_unreachable":

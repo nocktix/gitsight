@@ -15,13 +15,13 @@ class ScanIn(BaseModel):
 @router.post("/scan")
 def scan(body: ScanIn):
     try:
-        repos = batch.list_repos(body.folder)
+        repos, zip_warnings = batch.scan_source(body.folder)
     except batch.BatchError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
     prefix, prefix_warnings = batch.resolve_prefix(repos)
     task_id, warnings = batch.task_id_for(repos, prefix)
-    warnings = prefix_warnings + warnings
+    warnings = zip_warnings + prefix_warnings + warnings
     groups = [
         {
             # Clave del grupo: la URL del origin (la del flujo por URL); sin origin, la ruta.

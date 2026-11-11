@@ -167,6 +167,10 @@ test("solo se ofrece reintentar cuando el error puede ser pasajero", () => {
   assert.equal(isRetryable("provider_error"), true);
   assert.equal(isRetryable("invalid_api_key"), false);
   assert.equal(isRetryable("no_credit_or_rate_limit"), false);
+  assert.equal(isRetryable("rate_limited"), true);
+  assert.equal(isLlmErrorCode("rate_limited"), true);
+  assert.match(friendlyLlmError("rate_limited", null, ""), /límite de pedidos por minuto/);
+  assert.doesNotMatch(friendlyLlmError("no_credit_or_rate_limit", null, ""), /espera un momento/i);
   assert.equal(isLlmErrorCode("invalid_api_key"), true);
   assert.equal(isLlmErrorCode("repo_not_found"), false);
   assert.equal(isLlmErrorCode(null), false);

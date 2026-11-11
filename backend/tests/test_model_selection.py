@@ -110,6 +110,59 @@ def test_automatic_mode_raises_last_error_when_all_fail(provider):
     assert exc.value.model_attempted == "m/c"
 
 
+def test_failed_model_goes_to_the_end_of_the_chain_keeping_order(provider):
+    provider.failing = {"m/b:free"}
+    llm.analyze("s", "u")  # b falla, a responde
+    provider.failing = set()
+    provider.called.clear()
+    llm.analyze("s", "u")
+    assert provider.called == ["m/a:free"]  # b ya no va primero
+    provider.failing = {"m/a:free"}
+    provider.called.clear()
+    llm.analyze("s", "u")
+    # a falla; el orden de los demás se mantiene: c antes que b (caído antes)
+    assert provider.called == ["m/a:free", "m/c"]
+
+
+def test_failed_model_returns_to_its_place_after_the_cooldown(provider, monkeypatch):
+    clock = [1000.0]
+    monkeypatch.setattr(llm.time, "monotonic", lambda: clock[0])
+    provider.failing = {"m/b:free"}
+    llm.analyze("s", "u")
+    provider.failing = set()
+    provider.called.clear()
+    clock[0] += llm.MODEL_COOLDOWN_SECONDS - 1
+    llm.analyze("s", "u")
+    assert provider.called == ["m/a:free"]
+    provider.called.clear()
+    clock[0] += 2  # ya pasaron los 5 minutos
+    llm.analyze("s", "u")
+    assert provider.called == ["m/b:free"]
+
+
+def test_all_models_failing_recently_are_still_tried_in_order(provider):
+    provider.failing = {"m/a:free", "m/b:free", "m/c"}
+    with pytest.raises(LLMError):
+        llm.analyze("s", "u")
+    provider.called.clear()
+    provider.failing = {"m/a:free", "m/b:free"}
+    result = llm.analyze("s", "u")
+    assert provider.called == ["m/b:free", "m/a:free", "m/c"]
+    assert result.model_used == "m/c"
+
+
+def test_a_model_that_answers_is_removed_from_the_failed_list(provider):
+    provider.failing = {"m/b:free"}
+    llm.analyze("s", "u")
+    provider.failing = {"m/a:free", "m/c"}
+    provider.called.clear()
+    llm.analyze("s", "u")  # a y c fallan; b (al final) responde y se rehabilita
+    provider.failing = set()
+    provider.called.clear()
+    llm.analyze("s", "u")
+    assert provider.called == ["m/b:free"]
+
+
 def test_explicit_model_uses_only_that_model_without_fallback(provider):
     provider.failing = {"m/a:free"}
     with pytest.raises(LLMError) as exc:

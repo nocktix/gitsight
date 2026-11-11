@@ -291,7 +291,7 @@ cuando quieras con el botón **?** de la barra superior.
 
 ### 6.9 Analizar una tarea completa desde una carpeta
 
-Si tienes los repositorios de todos los grupos en tu computador, GitSight los analiza uno tras otro.
+Si tienes los repositorios de todos los grupos en tu computador, GitSight los analiza de a tres a la vez.
 GitSight analiza la copia descargada: para ver commits nuevos, vuelve a correr `gh teacher download` y
 escanea la carpeta nueva.
 
@@ -305,16 +305,51 @@ escanea la carpeta nueva.
    `<classroom>-<tarea>-<usuario>`. El archivo `scores.csv` que queda en la raíz se ignora.
 
 2. **Copia la ruta de la carpeta.** En el Finder de Mac, selecciona la carpeta y pulsa **⌥⌘C**
-   (Opción + Comando + C): copia su ruta completa, lista para pegar.
+   (Opción + Comando + C): copia su ruta completa, lista para pegar. También puedes pegar la ruta de un
+   archivo **`.zip`** con esa carpeta completa. Dentro de la carpeta puede haber, mezclados con las
+   subcarpetas, **un `.zip` por repositorio**; el repositorio puede estar en la raíz del `.zip` o dentro de
+   una subcarpeta.
+
+   > **Ojo con «Download ZIP» de GitHub.** Ese `.zip` no trae la carpeta `.git`, es decir, no incluye el
+   > historial de commits, y GitSight no puede analizarlo: lo omite y te avisa. Descarga siempre con
+   > `gh teacher download`.
+
+   GitSight descomprime cada `.zip` en `~/.tid-cache/zips` (al lado de la caché de repositorios; la carpeta
+   se cambia con `TID_CACHE_DIR`) y nunca modifica el original. Si el `.zip` no cambia, reutiliza lo ya
+   descomprimido; si cambia, lo descomprime de nuevo. Si un mismo repositorio aparece como carpeta y dentro
+   de un `.zip`, usa la carpeta y avisa. Un `.zip` dañado se omite con un aviso.
 
 3. En la pantalla de inicio abre la pestaña **Tarea completa (carpeta)**, pega la ruta y pulsa
    **Escanear carpeta**. Verás una tabla con cada grupo, sus commits y su estado.
 
-4. Pulsa **Analizar todos**. GitSight analiza un grupo a la vez con la rúbrica activa de la tarea, muestra
-   el avance y deja cancelar en cualquier momento. Si un grupo falla (por ejemplo, por la clave o el
-   crédito del modelo), lo marca con el error y sigue con el siguiente; al terminar puedes volver a
-   pulsar **Analizar todos** para reintentar solo los que fallaron. Cada análisis queda en el
-   [historial](#67-historial-de-análisis) como si lo hubieras hecho de a uno, y **Abrir** muestra el grupo.
+4. Pulsa **Analizar todos**. GitSight analiza **3 grupos a la vez** con la rúbrica activa de la tarea, muestra
+   el avance y deja cancelar en cualquier momento. Cada análisis queda en el
+   [historial](#67-historial-de-análisis) como si lo hubieras hecho de a uno.
+
+5. **Abre los grupos listos mientras el lote sigue.** En cuanto un grupo queda en **Listo**, su botón
+   **Abrir** se activa; el análisis de los demás sigue en segundo plano aunque cierres la ventana del lote
+   o abras un grupo. Solo **Cancelar** lo detiene. Mientras corre, el botón **Tarea completa (carpeta)**
+   muestra el avance (por ejemplo, `3/6`), y en la barra superior aparece **Ver lote**, que vuelve a abrir la
+   tabla. **Ver lote** queda disponible hasta que escanees otra carpeta.
+
+6. Si el lote se interrumpió o algunos grupos fallaron, el botón principal pasa a **Continuar con N
+   pendientes** y analiza solo los grupos que no están listos.
+
+#### Si algo falla durante el lote
+
+- **Falla un grupo** (repositorio dañado, mal formato, error del proveedor): ese grupo queda en **Error**
+  con el motivo y el lote sigue con los demás.
+- **El proveedor pidió esperar** (límite de pedidos por minuto, frecuente en los modelos gratuitos): el
+  grupo pasa a **Esperando al proveedor…**, espera 30 segundos y lo reintenta, hasta 2 veces. Si sigue
+  fallando, el lote se detiene como en el caso siguiente.
+- **Sin crédito, clave inválida, modelo inexistente, IA sin configurar o backend inalcanzable:** el lote
+  se **detiene**. No se lanzan grupos nuevos, los que ya estaban en curso terminan, y el que falló y los que
+  faltaban quedan **Pendiente**. Aparece un aviso que explica qué pasó, recuerda que lo ya analizado quedó
+  guardado y trae el botón **Configurar IA**. Arregla el problema y pulsa **Continuar con N pendientes**.
+
+En el modo **Automático** de OpenRouter, cuando un modelo de la cadena falla, GitSight lo recuerda por
+5 minutos y lo deja al final de la lista para los pedidos siguientes, así el lote no pierde tiempo
+reintentando un modelo caído en cada grupo. Si todos fallaron hace poco, los prueba igual.
 
 Cómo se deducen la tarea y los grupos:
 
@@ -414,8 +449,12 @@ esa restricción) o ejecuta `powershell -ExecutionPolicy Bypass -File start.ps1`
 **«La API key no es válida o no tiene permiso».** La clave está mal copiada, venció o pertenece a otro
 proveedor. Crea una nueva en la página del proveedor, pégala en **Modelo de IA** y usa **Probar conexión**.
 
-**«No queda crédito o se alcanzó el límite de uso».** Tu cuenta no tiene saldo o llegó a su límite. Recarga
-saldo, espera un momento o prueba con otro modelo o proveedor.
+**«No queda crédito o se agotó la cuota de uso».** Tu cuenta no tiene saldo o agotó su cuota. Recarga saldo
+o prueba con otro modelo o proveedor.
+
+**«El proveedor pidió esperar».** Se alcanzó el límite de pedidos por minuto del proveedor (es común en los
+modelos gratuitos). No es un problema de saldo: espera un momento y vuelve a intentarlo. En el análisis por
+lote, GitSight espera y reintenta solo (ver [Si algo falla durante el lote](#si-algo-falla-durante-el-lote)).
 
 **«El proveedor no reconoce el modelo».** Revisa que el nombre esté bien escrito y que siga vigente en el
 proveedor, o elige otro.

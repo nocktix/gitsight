@@ -11,9 +11,11 @@ import TopBar from "./components/TopBar";
 import TriangulationPanel from "./components/TriangulationPanel";
 import LlmSettings from "./components/LlmSettings";
 import WelcomeScreen from "./components/WelcomeScreen";
+import BatchDialogHost from "./components/BatchDialogHost";
 import { useEvidence } from "./context/useEvidence";
 import { useLlmConfig } from "./context/useLlmConfig";
 import { useWorkspace } from "./context/useWorkspace";
+import { BatchProvider } from "./context/BatchContext";
 import { WorkspaceProvider } from "./context/WorkspaceContext";
 import "./App.css";
 
@@ -63,8 +65,11 @@ function LlmSettingsHost() {
 export default function App() {
   return (
     <WorkspaceProvider>
-      <AppContent />
-      <LlmSettingsHost />
+      <BatchProvider>
+        <AppContent />
+        <BatchDialogHost />
+        <LlmSettingsHost />
+      </BatchProvider>
     </WorkspaceProvider>
   );
 }

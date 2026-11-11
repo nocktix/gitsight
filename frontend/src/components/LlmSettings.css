@@ -1,7 +1,9 @@
 .llm-settings__backdrop {
   position: fixed;
   inset: 0;
-  z-index: 100;
+  /* Encima de los demás diálogos (110: lote, rúbrica, archivos) para que se vea al abrirse desde
+     ellos, y debajo del recorrido guiado (200). */
+  z-index: 150;
   display: flex;
   align-items: center;
   justify-content: center;

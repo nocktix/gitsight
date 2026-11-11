@@ -8,6 +8,7 @@ por `redact` antes de guardarse en la excepción.
 NOT_CONFIGURED = "llm_not_configured"
 INVALID_API_KEY = "invalid_api_key"
 NO_CREDIT = "no_credit_or_rate_limit"
+RATE_LIMITED = "rate_limited"
 MODEL_NOT_FOUND = "model_not_found"
 UNREACHABLE = "provider_unreachable"
 TIMEOUT = "timeout"
@@ -20,6 +21,10 @@ _ERRORS: dict[str, tuple[int, str]] = {
     NO_CREDIT: (
         402,
         "El proveedor indica que no hay crédito disponible o que se alcanzó el límite de uso.",
+    ),
+    RATE_LIMITED: (
+        429,
+        "El proveedor pidió esperar: se alcanzó su límite de pedidos por minuto.",
     ),
     MODEL_NOT_FOUND: (400, "El proveedor no reconoce el modelo indicado."),
     UNREACHABLE: (502, "No se pudo conectar con el proveedor."),
@@ -69,7 +74,8 @@ class LLMResponseFormatError(Exception):
         self.model = model  # modelo que respondió con mal formato (lo completa analyze_structured)
 
 
-_CREDIT_WORDS = ("credit", "quota", "billing", "insufficient", "balance", "rate limit", "rate_limit")
+_CREDIT_WORDS = ("credit", "quota", "billing", "insufficient", "balance")
+_RATE_WORDS = ("rate limit", "rate_limit")
 _MODEL_WORDS = ("model", "modelo")
 _MODEL_MISSING_WORDS = ("not found", "not_found", "does not exist", "not a valid", "invalid model", "unknown")
 
@@ -81,12 +87,14 @@ def from_http_status(
     low = body_text.lower()
     if status in (401, 403):
         code = INVALID_API_KEY
-    elif status in (402, 429):
-        code = NO_CREDIT
+    elif status == 402 or (status in (429, 400) and any(w in low for w in _CREDIT_WORDS)):
+        code = NO_CREDIT  # sin saldo o cuota (Anthropic responde 400 cuando se acaba el saldo)
+    elif status == 429 or any(w in low for w in _RATE_WORDS):
+        code = RATE_LIMITED  # límite de pedidos por minuto: se resuelve esperando
     elif status in (400, 404, 422) and "api key" in low and ("invalid" in low or "not valid" in low):
         code = INVALID_API_KEY  # Gemini responde 400 ante una key inválida
     elif any(w in low for w in _CREDIT_WORDS):
-        code = NO_CREDIT  # Anthropic responde 400 cuando se acaba el saldo
+        code = NO_CREDIT
     elif status == 404 or (
         status in (400, 422)
         and any(w in low for w in _MODEL_WORDS)

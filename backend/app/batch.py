@@ -6,6 +6,8 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
+from app import batch_zip
+
 _GIT_TIMEOUT_SECONDS = 15
 _GITHUB_ORIGIN = re.compile(
     r"^(?:https?://(?:[^/@]+@)?github\.com/|git@github\.com:|ssh://git@github\.com/)"
@@ -82,28 +84,107 @@ def read_marker_prefix(path: Path) -> str | None:
     return None
 
 
-def list_repos(folder: str) -> list[ScannedRepo]:
-    """Subcarpetas con .git, ordenadas por nombre. Los archivos (scores.csv) y las carpetas
-    sin .git se ignoran."""
-    root = Path(folder.strip().strip("'\"")).expanduser()
+_NO_GIT_ZIP = (
+    "no trae la carpeta .git, es decir, no incluye el historial de commits (es lo que pasa con "
+    "«Download ZIP» de GitHub). Descarga los repositorios con gh teacher download."
+)
+
+
+def _visible_dirs(path: Path) -> list[Path]:
+    return [
+        d
+        for d in sorted(path.iterdir())
+        if d.is_dir() and not d.name.startswith(".") and d.name not in ("__MACOSX",)
+    ]
+
+
+def _repo_in_zip(extracted: Path, zip_stem: str) -> tuple[str, Path] | None:
+    """(nombre, ruta) del repo de un zip: en la raíz (se llama como el zip) o dentro de una
+    única subcarpeta (se llama como ella). None si no trae .git."""
+    if (extracted / ".git").exists():
+        return zip_stem, extracted
+    inner = [d for d in _visible_dirs(extracted) if (d / ".git").exists()]
+    return (inner[0].name, inner[0]) if len(inner) == 1 else None
+
+
+def _scanned(name: str, path: Path) -> ScannedRepo:
+    return ScannedRepo(
+        folder=name,
+        path=str(path.resolve()),
+        origin_url=normalize_origin(_git(path, "config", "--get", "remote.origin.url")),
+        commits=count_commits(path),
+        marker_prefix=read_marker_prefix(path),
+    )
+
+
+def _extract_or_warn(zip_path: Path, warnings: list[str]) -> Path | None:
+    try:
+        return batch_zip.extract(zip_path)
+    except batch_zip.ZipProblem as exc:
+        warnings.append(f"Se omitió el .zip «{zip_path.name}»: {exc}")
+        return None
+
+
+def _scan_folder(root: Path, warnings: list[str]) -> list[ScannedRepo]:
+    """Repos de una carpeta: subcarpetas con .git y .zip con un repo cada uno. Si un repo está
+    como carpeta y como zip, manda la carpeta."""
+    found: dict[str, ScannedRepo] = {}
+    for d in _visible_dirs(root):
+        if (d / ".git").exists():
+            found[d.name.lower()] = _scanned(d.name, d)
+    for z in sorted(p for p in root.iterdir() if p.is_file() and p.suffix.lower() == ".zip"):
+        extracted = _extract_or_warn(z, warnings)
+        if extracted is None:
+            continue
+        repo = _repo_in_zip(extracted, z.stem)
+        if repo is None:
+            warnings.append(f"Se omitió el .zip «{z.name}»: {_NO_GIT_ZIP}")
+        elif repo[0].lower() in found:
+            warnings.append(
+                f"El repositorio «{repo[0]}» está como carpeta y también dentro de «{z.name}»: "
+                "se usó la carpeta."
+            )
+        else:
+            found[repo[0].lower()] = _scanned(*repo)
+    return sorted(found.values(), key=lambda r: r.folder.lower())
+
+
+def scan_source(path_text: str) -> tuple[list[ScannedRepo], list[str]]:
+    """Repos y avisos de la ruta pegada: una carpeta o un .zip con la carpeta completa."""
+    root = Path(path_text.strip().strip("'\"")).expanduser()
+    warnings: list[str] = []
+    if root.is_file() and root.suffix.lower() == ".zip":
+        extracted = _extract_or_warn(root, warnings)
+        if extracted is None:
+            raise BatchError(warnings[0])
+        top = _repo_in_zip(extracted, root.stem) if (extracted / ".git").exists() else None
+        if top:
+            repos = [_scanned(*top)]
+        else:
+            repos = _scan_folder(extracted, warnings)
+            subdirs = _visible_dirs(extracted)
+            if not repos and len(subdirs) == 1:  # la carpeta completa dentro de una carpeta
+                repos = _scan_folder(subdirs[0], warnings)
+                if not repos:
+                    top = _repo_in_zip(extracted, root.stem)
+                    repos = [_scanned(*top)] if top else []
+        if not repos:
+            raise BatchError(f"El .zip «{root.name}» {_NO_GIT_ZIP}")
+        return repos, warnings
     if not root.is_dir():
         raise BatchError("La carpeta no existe. Revisa que la ruta esté completa.")
-    repos = [
-        ScannedRepo(
-            folder=d.name,
-            path=str(d.resolve()),
-            origin_url=normalize_origin(_git(d, "config", "--get", "remote.origin.url")),
-            commits=count_commits(d),
-            marker_prefix=read_marker_prefix(d),
-        )
-        for d in sorted(root.iterdir())
-        if d.is_dir() and not d.name.startswith(".") and (d / ".git").exists()
-    ]
+    repos = _scan_folder(root, warnings)
     if not repos:
         raise BatchError(
-            "No hay repositorios en esa carpeta (no se encontró ninguna subcarpeta con .git)."
+            "No hay repositorios en esa carpeta (no se encontró ninguna subcarpeta con .git "
+            "ni un .zip con un repositorio)."
         )
-    return repos
+    return repos, warnings
+
+
+def list_repos(folder: str) -> list[ScannedRepo]:
+    """Repos de una carpeta o un .zip, ordenados por nombre (sin los avisos)."""
+    return scan_source(folder)[0]
 
 
 def resolve_prefix(repos: list[ScannedRepo]) -> tuple[str, list[str]]:

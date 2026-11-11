@@ -8,6 +8,8 @@ y scripts/test_llm_triangulacion_completa.py — mismas preguntas por nivel de t
 import json
 import logging
 import re
+import threading
+import time
 from dataclasses import dataclass
 
 from dotenv import load_dotenv
@@ -146,6 +148,40 @@ def _call_model(config: LLMConfig, system_prompt: str, user_prompt: str) -> Anal
     )
 
 
+# Modo Automático: un modelo que falló se recuerda por MODEL_COOLDOWN_SECONDS y pasa al final de
+# la cadena, para que un análisis por lote no pierda tiempo reintentando uno caído en cada grupo.
+MODEL_COOLDOWN_SECONDS = 300
+_failed_models: dict[str, float] = {}  # modelo -> instante (monotónico) de su último fallo
+_failed_lock = threading.Lock()
+
+
+def clear_failed_models() -> None:
+    """Olvida los modelos caídos (lo usan los tests)."""
+    with _failed_lock:
+        _failed_models.clear()
+
+
+def _mark_failed(model: str) -> None:
+    with _failed_lock:
+        _failed_models[model] = time.monotonic()
+
+
+def _mark_ok(model: str) -> None:
+    with _failed_lock:
+        _failed_models.pop(model, None)
+
+
+def _ordered_chain(chain: list[str]) -> list[str]:
+    """La cadena con los modelos caídos hace poco al final, conservando el orden dentro de cada
+    grupo. Si todos cayeron, queda igual: se prueban todos."""
+    now = time.monotonic()
+    with _failed_lock:
+        for model in [m for m, at in _failed_models.items() if now - at >= MODEL_COOLDOWN_SECONDS]:
+            del _failed_models[model]
+        down = {m for m in chain if m in _failed_models}
+    return [m for m in chain if m not in down] + [m for m in chain if m in down]
+
+
 def analyze(
     system_prompt: str, user_prompt: str, config: LLMConfig | None = None
 ) -> AnalysisResult:
@@ -164,7 +200,7 @@ def analyze(
         return result
 
     last_error: LLMError | None = None
-    for candidate in model_catalog.fallback_chain():
+    for candidate in _ordered_chain(model_catalog.fallback_chain()):
         try:
             result = _call_model(config.with_model(candidate), system_prompt, user_prompt)
         except LLMError as exc:
@@ -172,8 +208,10 @@ def analyze(
                 raise
             logger.warning("Modelo %s no disponible: %s", candidate, exc.message)
             exc.model_attempted = exc.model_attempted or candidate
+            _mark_failed(candidate)
             last_error = exc
             continue
+        _mark_ok(candidate)
         logger.info("Usando modelo: %s", result.model_used)
         return result
 
