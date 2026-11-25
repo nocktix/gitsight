@@ -20,14 +20,21 @@ export default function RubricField({
   onSaveOnly,
   onCancel,
   submitLabel,
+  saveOnly = false,
 }: {
   initialText: string;
-  /** Guardar y analizar. */
-  onSubmit: (value: RubricSubmit) => void;
+  /** Guardar y analizar. No se usa con `saveOnly`. */
+  onSubmit?: (value: RubricSubmit) => void;
   /** Guardar como versión nueva sin analizar. */
   onSaveOnly: (value: RubricSubmit) => void;
   onCancel: () => void;
+  /** Texto del botón principal (guardar y analizar); con `saveOnly` es el de guardar. */
   submitLabel: string;
+  /**
+   * Solo se puede guardar, nunca analizar desde aquí (el lote analiza con su propio botón):
+   * oculta "guardar y analizar" y deja "guardar" como botón principal.
+   */
+  saveOnly?: boolean;
 }) {
   const [text, setText] = useState(initialText);
   const [filename, setFilename] = useState<string | null>(null);
@@ -101,22 +108,35 @@ export default function RubricField({
         anteriores se conservan. Si el texto es igual al de una versión existente, se reutiliza esa.
       </p>
       <div className="rubric-field__actions">
-        <button
-          className="rubric-field__primary"
-          disabled={blocked}
-          onClick={() => onSubmit(value())}
-          type="button"
-        >
-          {submitLabel}
-        </button>
-        <button
-          className="rubric-field__secondary"
-          disabled={blocked}
-          onClick={() => onSaveOnly(value())}
-          type="button"
-        >
-          Solo guardar como versión nueva
-        </button>
+        {saveOnly ? (
+          <button
+            className="rubric-field__primary"
+            disabled={blocked}
+            onClick={() => onSaveOnly(value())}
+            type="button"
+          >
+            {submitLabel}
+          </button>
+        ) : (
+          <>
+            <button
+              className="rubric-field__primary"
+              disabled={blocked}
+              onClick={() => onSubmit?.(value())}
+              type="button"
+            >
+              {submitLabel}
+            </button>
+            <button
+              className="rubric-field__secondary"
+              disabled={blocked}
+              onClick={() => onSaveOnly(value())}
+              type="button"
+            >
+              Solo guardar como versión nueva
+            </button>
+          </>
+        )}
         <button className="rubric-field__secondary" onClick={onCancel} type="button">
           Cancelar
         </button>

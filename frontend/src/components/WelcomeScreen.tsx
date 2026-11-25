@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useWorkspace } from "../context/useWorkspace";
 import { useOpenRepo } from "../hooks/useOpenRepo";
 import BatchPanel from "./BatchPanel";
+import ModelStatusLine from "./ModelStatusLine";
 import TaskConfirm from "./TaskConfirm";
 import TopBar from "./TopBar";
 import Wordmark from "./Wordmark";
@@ -78,6 +79,7 @@ export default function WelcomeScreen() {
               </p>
             </form>
           )}
+          <ModelStatusLine />
         </div>
         <p className="welcome__steps">
           1. Pega la URL → 2. Revisa las fechas y la rúbrica de la tarea → 3. Genera el

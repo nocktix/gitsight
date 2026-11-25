@@ -29,8 +29,10 @@ export default function TopBar() {
         GitSight
       </span>
 
-      {active && (
-        <div className="top-bar__selectors">
+      {/* Modelo de IA e Idioma se configuran antes de abrir nada, así que van siempre. */}
+      <div className="top-bar__selectors">
+        {active && (
+          <>
           <label className="top-bar__select">
             <span className="top-bar__select-label">Tarea</span>
             <span className="top-bar__select-value">{active.taskId}</span>
@@ -63,6 +65,8 @@ export default function TopBar() {
               ))}
             </select>
           </label>
+          </>
+        )}
           <label className="top-bar__select" title="Idioma en que responde la IA">
             <span className="top-bar__select-label">Idioma</span>
             <span className="top-bar__select-value">{languageLabel(language)}</span>
@@ -79,7 +83,7 @@ export default function TopBar() {
               ))}
             </select>
           </label>
-          {scan && (
+        {active && scan && (
             <button
               className="top-bar__gear"
               onClick={openDialog}
@@ -93,7 +97,7 @@ export default function TopBar() {
                 </span>
               )}
             </button>
-          )}
+        )}
           <button
             aria-label="Configurar modelo de IA"
             className={`top-bar__gear${config ? "" : " top-bar__gear--pending"}`}
@@ -108,6 +112,7 @@ export default function TopBar() {
             </svg>
             <span>Modelo de IA</span>
           </button>
+        {active && (
           <button
             aria-label="Ver el recorrido guiado"
             className="top-bar__help"
@@ -117,8 +122,8 @@ export default function TopBar() {
           >
             ?
           </button>
-        </div>
-      )}
+        )}
+      </div>
 
       {active && (
         <span className="top-bar__date">

@@ -31,7 +31,32 @@ export interface BatchValue {
   canContinue: boolean;
 
   scanFolder: () => Promise<void>;
-  analyzeAll: () => Promise<void>;
+  /**
+   * "Analizar todos" / "Continuar": primero verifica el modelo y la rúbrica. Sin modelo abre la
+   * configuración; sin rúbrica pregunta; con ambos parte el lote.
+   */
+  requestAnalyze: () => Promise<void>;
+  /** Se está comprobando la rúbrica de la tarea (unos instantes tras presionar el botón). */
+  checking: boolean;
+  /** Diálogo "Esta tarea no tiene rúbrica". */
+  noRubricPrompt: boolean;
+  closeNoRubricPrompt: () => void;
+  /** Del diálogo: parte el lote sin rúbrica. */
+  analyzeWithoutRubric: () => void;
+  /** Del diálogo: abre el editor de rúbrica del bloque "Rúbrica de la tarea". */
+  addRubricFromPrompt: () => void;
+  /** Editor de rúbrica del bloque (agregar o cambiar). */
+  rubricEditorOpen: boolean;
+  openRubricEditor: () => void;
+  closeRubricEditor: () => void;
+  /** Guarda la rúbrica como versión nueva de la tarea escaneada, sin analizar. true si se guardó. */
+  saveBatchRubric: (value: {
+    text: string;
+    filename: string | null;
+    note: string | null;
+  }) => Promise<boolean>;
+  /** Aviso que invita a presionar "Analizar todos" (tras guardar el modelo o la rúbrica). */
+  notice: string | null;
   cancel: () => void;
   /** Abre un grupo del lote en la pantalla principal; cierra la ventana del lote. */
   openGroup: (group: BatchGroup) => Promise<void>;

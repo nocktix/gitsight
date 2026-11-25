@@ -2,6 +2,7 @@ import { useBatch } from "../context/useBatch";
 import { useLlmConfig } from "../context/useLlmConfig";
 import { useWorkspace } from "../context/useWorkspace";
 import type { BatchState } from "../utils/batchRun";
+import BatchRubric, { NoRubricDialog } from "./BatchRubric";
 import LlmNotConfigured from "./LlmNotConfigured";
 import "./BatchPanel.css";
 
@@ -66,6 +67,7 @@ export default function BatchPanel() {
               {w}
             </p>
           ))}
+          <BatchRubric />
           {running && (
             <p className="batch__hint" role="status">
               Puedes abrir los grupos que ya están listos: el análisis de los demás sigue en
@@ -137,8 +139,8 @@ export default function BatchPanel() {
           <div className="batch__actions">
             <button
               className="welcome__button"
-              disabled={!config || running || b.remaining === 0}
-              onClick={() => void b.analyzeAll()}
+              disabled={running || b.checking || b.remaining === 0}
+              onClick={() => void b.requestAnalyze()}
               type="button"
             >
               {running
@@ -158,7 +160,13 @@ export default function BatchPanel() {
               </span>
             )}
           </div>
+          {b.notice && (
+            <p className="welcome__loading" role="status">
+              {b.notice}
+            </p>
+          )}
           {b.summary && <p className="welcome__loading">{b.summary}</p>}
+          <NoRubricDialog />
           {openError && !pendingUrl && <p className="welcome__error">{openError}</p>}
         </>
       )}

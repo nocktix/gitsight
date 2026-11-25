@@ -231,12 +231,14 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const setEndDate = useCallback((value: string) => changeDate("endDate", value), [changeDate]);
   const [rubricRevision, setRubricRevision] = useState(0);
   const saveRubric = useCallback<WorkspaceValue["saveRubric"]>(
-    async (text, meta) => {
-      if (!activeTaskId) return null;
+    async (text, meta, taskId) => {
+      // Sin `taskId` es la tarea del grupo abierto; el lote pasa la de la carpeta escaneada.
+      const targetId = taskId ?? activeTaskId;
+      if (!targetId) return null;
       try {
-        const saved = await saveTaskRubricVersion(activeTaskId, text, meta);
+        const saved = await saveTaskRubricVersion(targetId, text, meta);
         if (saved.active) {
-          updateTask(activeTaskId, (t) => ({ ...t, rubric: saved.content, rubricVersion: saved.version }));
+          updateTask(targetId, (t) => ({ ...t, rubric: saved.content, rubricVersion: saved.version }));
         }
         setRubricRevision((n) => n + 1);
         return { version: saved.version, created: saved.created };

@@ -44,6 +44,8 @@ export interface WorkspaceValue {
   saveRubric: (
     text: string,
     meta?: { filename?: string | null; note?: string | null; activate?: boolean },
+    /** Tarea de destino; por defecto la del grupo abierto. El lote pasa la de la carpeta escaneada. */
+    taskId?: string,
   ) => Promise<{ version: number; created: boolean } | null>;
   /** Activa una versión: los próximos análisis de todos los grupos de la tarea la usan. */
   activateRubric: (version: number) => Promise<boolean>;

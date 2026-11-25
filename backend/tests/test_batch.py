@@ -529,3 +529,31 @@ def test_zip_over_the_size_cap_is_rejected_and_leaves_no_cache(tmp_path, zip_cac
     with pytest.raises(batch_zip.ZipProblem):
         batch_zip.extract(z)
     assert not any(p.is_dir() and not p.name.startswith(".tmp-") for p in zip_cache.iterdir())
+
+
+def test_rubric_saved_after_scan_is_a_new_version_of_the_scanned_task_without_analyzing(
+    client, tmp_path, monkeypatch
+):
+    def no_analysis(*args, **kwargs):  # pragma: no cover - solo falla si se analiza
+        raise AssertionError("guardar la rúbrica no debe analizar nada")
+
+    monkeypatch.setattr(main, "_persist_analysis", no_analysis)
+    task = _scan(client, _download(tmp_path)).json()["task_id"]
+    base = f"/api/tasks/{task}/rubric/versions"
+    assert client.get(base).json() == []  # tarea nueva: sin rúbrica
+
+    first = client.post(base, json={"content": "Criterio 1", "filename": "rubrica.pdf"}).json()
+    second = client.post(base, json={"content": "Criterio 1 y 2", "note": "pegada"}).json()
+    assert (first["version"], first["active"], second["version"], second["active"]) == (1, True, 2, True)
+    assert {v["version"]: v["active"] for v in client.get(base).json()} == {1: False, 2: True}
+    assert client.get(f"/api/tasks/{task}/rubric").json()["content"] == "Criterio 1 y 2"
+
+
+def test_rubric_of_a_local_task_is_saved_under_that_task(client, tmp_path):
+    root = tmp_path / "d2"
+    root.mkdir()
+    _repo(root, "tarea01-ana", origin=None)
+    task = _scan(client, root).json()["task_id"]
+    assert task.startswith("local/")
+    res = client.post(f"/api/tasks/{task}/rubric/versions", json={"content": "R"})
+    assert res.status_code == 200 and res.json()["version"] == 1

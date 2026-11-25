@@ -125,7 +125,10 @@ Abre <http://localhost:5173>.
 ## 4. Configurar el modelo de IA
 
 GitSight usa **tu propia cuenta** de un proveedor de IA. Se configura una vez desde la aplicación:
-botón **Modelo de IA** (engranaje) de la barra superior.
+botón **Modelo de IA** (engranaje) de la barra superior. El botón (y el selector **Idioma**) están
+**desde la pantalla de inicio**, antes de abrir cualquier repositorio. Bajo el formulario de inicio,
+una línea indica el estado: «Modelo de IA: sin configurar · **Configurar**» o, ya configurado,
+«Modelo de IA: OpenRouter · Automático · **Cambiar**»; ambos botones abren la misma ventana.
 
 ![Ventana para configurar el modelo de IA](docs/img/06-modelo-ia.png)
 
@@ -322,7 +325,31 @@ escanea la carpeta nueva.
 3. En la pantalla de inicio abre la pestaña **Tarea completa (carpeta)**, pega la ruta y pulsa
    **Escanear carpeta**. Verás una tabla con cada grupo, sus commits y su estado.
 
-4. Pulsa **Analizar todos**. GitSight analiza **3 grupos a la vez** con la rúbrica activa de la tarea, muestra
+   Justo después de escanear, antes de la tabla, aparece el bloque **Rúbrica de la tarea**:
+
+   - Con rúbrica activa: «Versión N activa · nombre del archivo (o la fecha si pegaste el texto)», con
+     **Ver** y **Cambiar**.
+   - Sin rúbrica: «Esta tarea no tiene rúbrica», con **Agregar rúbrica**.
+
+   El editor es el mismo de la vista de un grupo: sube un `.pdf`, `.docx`, `.md` o `.txt`, o pega el
+   texto. **Guardar como versión nueva** crea una versión nueva de la rúbrica de la tarea y la deja
+   activa, **sin analizar nada**; las versiones anteriores se conservan. Si la tarea es `local/...`, el
+   bloque lo avisa: la rúbrica no se comparte con grupos abiertos por URL. Mientras el lote corre,
+   **Agregar rúbrica** y **Cambiar** quedan desactivados («No se puede cambiar la rúbrica mientras se
+   analiza el lote»), porque los grupos analizados terminarían con versiones distintas; **Ver** sigue
+   disponible.
+
+4. Pulsa **Analizar todos** (o **Continuar con N pendientes**). Antes de partir, GitSight verifica dos cosas:
+
+   - **Sin modelo de IA** en este navegador: no parte; abre la ventana del modelo. Al guardarlo aparece
+     «Modelo guardado. Presiona Analizar todos para empezar.» y vuelves a pulsar el botón.
+   - **Con modelo pero sin rúbrica activa**: pregunta «Esta tarea no tiene rúbrica. Los hallazgos no se
+     organizarán por criterio.» con **Agregar rúbrica** (abre el editor; al guardar aparece «Rúbrica
+     guardada. Presiona Analizar todos para empezar.» y el lote tampoco parte solo) y **Analizar sin
+     rúbrica**.
+   - **Con modelo y rúbrica**: parte sin preguntar nada más.
+
+   Con todo en orden, GitSight analiza **3 grupos a la vez** con la rúbrica activa de la tarea, muestra
    el avance y deja cancelar en cualquier momento. Cada análisis queda en el
    [historial](#67-historial-de-análisis) como si lo hubieras hecho de a uno.
 

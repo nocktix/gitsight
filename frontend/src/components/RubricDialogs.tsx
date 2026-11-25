@@ -1,16 +1,34 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { compareRubricVersions } from "../api/dbClient";
 import type { RubricComparison, RubricVersionFull } from "../api/dbClient";
 import { formatSantiago } from "../utils/analysisHistory";
 import EmptyState from "./EmptyState";
 import "./RubricSection.css";
 
+/** Diálogos abiertos, el último encima: Escape cierra solo el de arriba. */
+const openDialogs: symbol[] = [];
+
 function useEscape(onClose: () => void) {
+  // onClose suele ser una función nueva en cada render: se guarda en un ref para que el diálogo
+  // se registre una sola vez y conserve su lugar en la pila.
+  const closeRef = useRef(onClose);
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    closeRef.current = onClose;
+  });
+  useEffect(() => {
+    const me = Symbol("dialog");
+    openDialogs.push(me);
+    const onKey = (e: KeyboardEvent) => {
+      // La ventana "Modelo de IA" se abre encima de estos diálogos y tiene su propio Escape.
+      if (e.key !== "Escape" || document.querySelector(".llm-settings__backdrop")) return;
+      if (openDialogs[openDialogs.length - 1] === me) closeRef.current();
+    };
     document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [onClose]);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      openDialogs.splice(openDialogs.indexOf(me), 1);
+    };
+  }, []);
 }
 
 /** Diálogo modal genérico (Escape o clic fuera lo cierran); también lo usa el lote. */

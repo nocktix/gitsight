@@ -156,3 +156,12 @@ export function describeConfig(store: LlmStore): string {
   const model = settingsOf(store, store.active).model.trim();
   return `${presetOf(store.active).label} · ${model || "Automático"}`;
 }
+
+/**
+ * Estado del modelo para la línea de la pantalla de inicio. "Configurado" exige proveedor, modelo
+ * y clave completos (lo mismo que `activeConfig`); si falta algo se muestra "sin configurar".
+ */
+export function modelStatus(store: LlmStore): { configured: boolean; label: string } {
+  const configured = activeConfig(store) !== null;
+  return { configured, label: configured ? describeConfig(store) : "sin configurar" };
+}
