@@ -14,7 +14,7 @@ export interface TourStep {
 export const TOUR_STEPS: TourStep[] = [
   {
     title: "Barra superior",
-    text: "Te damos la bienvenida a GitSight. Desde la barra superior cambias de tarea o de grupo, eliges el idioma en que responde la IA, y el botón ? vuelve a mostrar este recorrido cuando quieras.",
+    text: "Te damos la bienvenida a GitSight. Desde la barra superior cambias de tarea o de grupo, eliges el idioma en que responde la IA y, con «Abrir grupo o tarea» (o el logo), vas al inicio para abrir otro grupo o una tarea completa; desde ahí «← Volver» te regresa al grupo. El botón ? vuelve a mostrar este recorrido.",
     selector: '[data-tour="topbar"]',
   },
   {
@@ -23,31 +23,30 @@ export const TOUR_STEPS: TourStep[] = [
     selector: '[data-tour="model"]',
   },
   {
-    title: "Fechas de la tarea",
-    text: "Indica el inicio y la entrega de la tarea. El análisis las usa para señalar los commits posteriores a la entrega.",
-    selector: '[data-tour="dates"]',
+    title: "Encabezado del grupo",
+    text: "Aquí ves el grupo, su tarea, sus integrantes, cuántos commits tiene y cómo va el análisis (sin analizar, analizado el… o desactualizado). El botón Analizar lanza el análisis con IA; después se convierte en Volver a analizar.",
+    selector: '[data-tour="group-header"]',
+  },
+  {
+    title: "Configuración de la tarea",
+    text: "Despliega esta sección para indicar el inicio y la entrega de la tarea (el análisis las usa para señalar los commits posteriores a la entrega) y para ver o cambiar la rúbrica. La rúbrica tiene versiones: al subir una nueva se conservan las anteriores, y cada análisis recuerda con cuál se hizo.",
+    selector: '[data-tour="config"]',
   },
   {
     title: "Calendario de actividad",
-    text: "Cada cuadrado es un día: mientras más oscuro, más commits. Haz clic en un día para ver sus commits por hora, y en un triángulo para ver los cambios de ese commit.",
+    text: "Cada cuadrado es un día: mientras más oscuro, más commits. Haz clic en un día para ver sus commits por hora, y en un triángulo para ver los cambios de ese commit. Se queda a la vista mientras recorres los hallazgos.",
     selector: '[data-tour="calendar"]',
   },
   {
-    title: "Análisis de triangulación",
-    text: "Aquí se contrastan los commits, la bitácora de prompts y la declaración de autoría. Solo muestra hechos y la evidencia que los respalda; la evaluación es tuya.",
-    selector: '[data-tour="triangulation"]',
-  },
-  {
-    title: "Versiones de la rúbrica",
-    text: "La rúbrica de la tarea tiene versiones: al subir una nueva se conservan las anteriores. Puedes activar cualquiera para los próximos análisis de todos los grupos, ver su texto y comparar dos. Cada análisis recuerda con qué versión se hizo.",
-    selector: '[data-tour="rubric"]',
-    fallback: '[data-tour="triangulation"]',
+    title: "Hallazgos",
+    text: "Aquí se contrastan los commits, la bitácora de prompts y la declaración de autoría, organizados por criterio de la rúbrica. Filtra por tipo con los botones de arriba. Solo se muestran hechos y la evidencia que los respalda; la evaluación es tuya.",
+    selector: '[data-tour="findings"]',
   },
   {
     title: "Evidencia de cada hallazgo",
     text: "Cada hallazgo trae chips con los commits y las líneas en que se apoya: haz clic para verlos. Al pasar el mouse sobre un hallazgo, sus commits se resaltan en el calendario. Aparecen después de ejecutar un análisis.",
     selector: '[data-tour="evidence"]',
-    fallback: '[data-tour="triangulation"]',
+    fallback: '[data-tour="findings"]',
   },
 ];
 

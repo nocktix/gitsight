@@ -81,6 +81,7 @@ const TEXT_PAIRS: [string, string][] = [
   ["--color-primary-disabled-text", "--color-primary-disabled-bg"],
   ["--color-accent-on-primary", "--color-primary"],
   ["--color-info-text", "--color-info-bg"],
+  ["--color-info-text", "--color-info-bg-hover"],
   ["--color-info-text", "--color-surface"],
   ["--color-discrepancy-text", "--color-discrepancy-bg"],
   ["--color-discrepancy-text", "--color-discrepancy-bg-soft"],

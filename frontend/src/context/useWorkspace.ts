@@ -21,6 +21,8 @@ export interface WorkspaceValue {
    */
   showHome: boolean;
   goHome: () => void;
+  /** Sale de la pantalla de inicio y vuelve al grupo abierto, tal como estaba. */
+  leaveHome: () => void;
   /** Grupos de todas las tareas guardadas, de la tarea más reciente hacia atrás (respaldo de los accesos rápidos). */
   savedGroups: RecentGroup[];
 

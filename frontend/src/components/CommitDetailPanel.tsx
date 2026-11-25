@@ -29,7 +29,7 @@ export default function CommitDetailPanel({
 }) {
   const [state, setState] = useState<PanelState>({ status: "loading" });
   const [closing, setClosing] = useState(false);
-  const { active } = useWorkspace();
+  const { active, showHome } = useWorkspace();
   const repoUrl = active?.url ?? "";
 
   useEffect(() => {
@@ -61,12 +61,14 @@ export default function CommitDetailPanel({
   }, [onClose]);
 
   useEffect(() => {
+    // Con el inicio abierto el panel sigue montado pero oculto: Escape no debe cerrarlo a escondidas.
+    if (showHome) return;
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") close();
     };
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [close]);
+  }, [close, showHome]);
 
   return (
     <div

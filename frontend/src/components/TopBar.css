@@ -126,6 +126,25 @@
   padding: 5px 12px;
 }
 
+/* «Abrir grupo o tarea»: celeste claro, algo más destacado que los demás botones de la barra. */
+.top-bar__open {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border: 1px solid var(--color-info-border);
+  border-radius: 999px;
+  background: var(--color-info-bg);
+  color: var(--color-info-text);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.top-bar__open:hover {
+  background: var(--color-info-bg-hover);
+}
+
 /* Modelo pendiente: borde arena y punto, que se distinguen también sobre la píldora blanca. */
 .top-bar__gear--pending {
   border-color: var(--color-sand-strong);

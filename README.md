@@ -216,14 +216,14 @@ hasta el último guion es la tarea y lo que sigue es el grupo. Si no está segur
 ![Confirmar la tarea del repositorio](docs/img/03-confirmar-tarea.png)
 
 Después puedes abrir otros grupos de la misma tarea desde la barra superior (selectores **Tarea** y
-**Grupo**) o pegando otra dirección en **Abrir otro repositorio**. Si el repositorio es privado, ver
+**Grupo**) o con el botón **+ Abrir grupo o tarea** de la barra superior (igual que el logo **GitSight**), que lleva al inicio, donde están las tarjetas **Un grupo** y **Tarea completa** y los accesos rápidos. Si lo apretaste sin querer, el botón **← Volver a <grupo>** de arriba a la izquierda (o el botón «atrás» del navegador) te regresa al grupo tal como estaba; un análisis en curso no se interrumpe. Si el repositorio es privado, ver
 [solución de problemas](#9-solución-de-problemas).
 
 ### 6.2 Fechas de la tarea
 
-Indica el **inicio** y la **entrega** (hora de Chile; la entrega vence a las 23:59 de ese día). Se guardan
+Están en la sección plegable **Configuración de la tarea**, bajo el encabezado del grupo. Cuando ya tiene fecha de entrega y rúbrica queda cerrada y resume en una línea («Entrega 06/03/2026 · Rúbrica v2 activa · Editar»); si falta alguna, se abre sola y dice qué falta. Indica el **inicio** y la **entrega** (hora de Chile; la entrega vence a las 23:59 de ese día). Se guardan
 por tarea y las comparten todos sus grupos. Con ellas, GitSight marca los commits posteriores a la
-entrega. Sin fecha de entrega no puede detectarlos.
+entrega. Sin fecha de entrega no puede detectarlos. Una fecha se guarda cuando está completa (año de cuatro dígitos); si el guardado falla, el campo vuelve a lo que tiene guardado el servidor y se avisa.
 
 ### 6.3 Calendario de actividad y vista por horas
 
@@ -234,6 +234,9 @@ entrega. Sin fecha de entrega no puede detectarlos.
   llevan un rayado gris y, si hubo commits, un **rayado violeta**: así se distinguen sin depender del color.
 - Al pasar el mouse sobre un hallazgo, el calendario **resalta los commits que cita** (en la imagen, los
   tres commits fuera de plazo) y atenúa el resto.
+- En pantallas anchas el calendario queda **fijo a la derecha** mientras recorres los hallazgos (si no cabe
+  en la ventana, deja de ser fijo para que puedas verlo completo). En pantallas angostas va debajo de los
+  hallazgos, y al saltar a un día desde un chip la pantalla baja hasta él.
 - Haz clic en un día para ver sus commits **por hora**. Cada triángulo es un commit (más grande, más
   líneas); los de fuera de plazo son violetas y con contorno.
 
@@ -244,7 +247,7 @@ IA** de ese commit.
 
 ### 6.4 Analizar
 
-Con la rúbrica cargada y el modelo configurado, pulsa **Analizar**. GitSight envía al modelo los commits,
+Con la rúbrica cargada y el modelo configurado, pulsa **Analizar** (o **Volver a analizar**) en el encabezado del grupo, que también indica el estado: «Sin analizar», «Analizado el … con …» o «Desactualizado» si hay una rúbrica nueva o commits nuevos. GitSight envía al modelo los commits,
 la bitácora, la autoría y la rúbrica activa, y recibe una lista de hallazgos. Puede tardar un minuto o más
 según el modelo.
 
@@ -258,6 +261,11 @@ Cada hallazgo tiene un tipo, con su propio ícono además del color:
 - **Discrepancia** (triángulo): una diferencia puntual entre lo declarado y lo observado.
 - **Alerta** (octágono): un patrón que conviene revisar primero (commits posteriores a la entrega, una
   bitácora agregada en un solo commit, un integrante declarado sin commits o con commits sin declarar…).
+
+Los hallazgos van en la columna izquierda. Los botones **Alertas · Discrepancias · Información** (con su
+conteo) filtran por tipo; al filtrar, los criterios que se quedan sin hallazgos se ocultan. Cada criterio de
+la rúbrica es una sección plegable con su conteo por tipo: se abren sola las que tienen alertas. Al final
+van el resumen general y los criterios no evaluables.
 
 ![Hallazgos con sus chips de evidencia](docs/img/08-hallazgos.png)
 
@@ -273,7 +281,7 @@ referencia que no exista de verdad en el repositorio.
 ### 6.6 Rúbrica y sus versiones
 
 La rúbrica es **por tarea**: la usan todos los grupos. Puedes subir un archivo (`.pdf`, `.docx`, `.md` o
-`.txt`) o pegar el texto, y escribir una nota (botón **Ver o editar rúbrica** / **Agregar rúbrica**).
+`.txt`) o pegar el texto, y escribir una nota (botón **Ver o editar rúbrica** / **Agregar rúbrica**, dentro de **Configuración de la tarea**).
 
 ![Editor de la rúbrica](docs/img/10-rubrica-editor.png)
 
@@ -301,7 +309,7 @@ su cuenta.
 
 ### 6.8 Recorrido guiado
 
-La primera vez que abres un repositorio, un recorrido de siete pasos explica cada zona. Puedes repetirlo
+La primera vez que abres un repositorio, un recorrido de siete pasos explica cada zona (barra superior, modelo de IA, encabezado del grupo, configuración de la tarea, calendario, hallazgos y evidencia). Puedes repetirlo
 cuando quieras con el botón **?** de la barra superior.
 
 ![Recorrido guiado](docs/img/14-recorrido.png)
@@ -566,8 +574,8 @@ y el proveedor de IA; la clave de IA viaja en un header y no se guarda en el ser
 ```mermaid
 flowchart LR
   subgraph NAV["Navegador (React + Vite)"]
-    UI["Pantallas<br/>WelcomeScreen, RepoUrlField,<br/>BatchPanel, TriangulationPanel"]
-    CTX["Contextos<br/>WorkspaceContext, LlmConfigContext"]
+    UI["Pantallas<br/>WelcomeScreen, GroupWorkspace,<br/>FindingsColumn, BatchPanel"]
+    CTX["Contextos<br/>WorkspaceContext, AnalysisContext,<br/>LlmConfigContext"]
     CLI["Clientes de la API<br/>src/api/*"]
     LS[("localStorage<br/>modelo y API key")]
     UI --> CTX --> CLI

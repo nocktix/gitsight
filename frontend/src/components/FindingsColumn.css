@@ -1,0 +1,206 @@
+.findings {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.findings__title {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.findings__subtitle-line {
+  margin: -8px 0 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.findings__loading {
+  margin: 0;
+  font-size: var(--text-md);
+  color: var(--color-text-muted);
+}
+
+.findings__error {
+  margin: 0;
+  font-size: var(--text-md);
+  color: var(--color-alert-text);
+}
+
+.findings__note {
+  margin: 8px 0 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.findings__info {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--color-info-bg);
+  font-size: var(--text-sm);
+  color: var(--color-info-text);
+}
+
+.findings__history {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.findings__history select {
+  min-width: 0;
+  max-width: 100%;
+  font-size: var(--text-sm);
+}
+
+.findings__primary {
+  padding: 10px 22px;
+  border: 1px solid var(--color-primary);
+  border-radius: 8px;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font: inherit;
+  font-weight: 600;
+}
+
+.findings__primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+.findings__primary:disabled {
+  border-color: var(--color-primary-disabled-bg);
+  background: var(--color-primary-disabled-bg);
+  color: var(--color-primary-disabled-text);
+}
+
+.findings__link {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-link);
+  font: inherit;
+  text-decoration: underline;
+}
+
+.findings__link:hover:not(:disabled) {
+  background: transparent;
+  color: var(--color-primary);
+}
+
+/* Filtros por tipo, con conteo. */
+.findings__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.findings__filter {
+  padding: 6px 14px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  transition:
+    background var(--motion-fast) var(--motion-ease),
+    border-color var(--motion-fast) var(--motion-ease);
+}
+
+.findings__filter:hover:not(:disabled) {
+  border-color: var(--color-accent);
+}
+
+.findings__filter[aria-pressed="true"] {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.findings__filter[aria-pressed="true"]:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+.findings__empty-filter {
+  margin: 0;
+  padding: 16px;
+  border: 1px dashed var(--color-sand);
+  border-radius: 8px;
+  background: var(--color-surface-muted);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+/* Cada criterio es una sección plegable. */
+.findings__criterion-title {
+  font-size: var(--text-md);
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.findings__counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.findings__count {
+  padding: 2px 8px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+
+.findings__count--alert {
+  border-color: var(--color-alert-border);
+  background: var(--color-alert-bg);
+  color: var(--color-alert-text);
+}
+
+.findings__count--discrepancy {
+  border-color: var(--color-discrepancy-border);
+  background: var(--color-discrepancy-bg);
+  color: var(--color-discrepancy-text);
+}
+
+.findings__count--info {
+  border-color: var(--color-info-border);
+  background: var(--color-info-bg);
+  color: var(--color-info-text);
+}
+
+.findings__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.findings__summary {
+  margin: 4px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--color-text);
+}
+
+.findings__subtitle {
+  margin: 0 0 6px;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.findings__not-assessable ul {
+  margin: 0;
+  padding-left: 20px;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}

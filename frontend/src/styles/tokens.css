@@ -116,6 +116,7 @@
 
   /* Hallazgos */
   --color-info-bg: var(--ocean-celeste-100);
+  --color-info-bg-hover: var(--ocean-celeste-200);
   --color-info-text: var(--ocean-petrol-700);
   --color-info-border: var(--ocean-celeste-400);
   --color-discrepancy-bg: var(--ocean-amber-200);

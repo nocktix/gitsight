@@ -29,6 +29,9 @@ export interface AnalysisValue {
   editing: boolean;
   setEditing: (editing: boolean) => void;
   rubricInfo: string | null;
+  /** Configuración de la tarea: true/false si el evaluador la abrió o cerró; null = según lo que falte. */
+  configOpen: boolean | null;
+  setConfigOpen: (open: boolean | null) => void;
   /** Qué archivos del repo existen (bitácora y autoría); null mientras se consulta. */
   presence: ArtifactPresence[] | null;
   /** `rubricVersion` null: el backend usa la versión activa de la tarea (o ninguna si no hay). */

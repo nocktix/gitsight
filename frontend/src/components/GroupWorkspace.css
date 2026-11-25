@@ -1,0 +1,36 @@
+.group-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 20px 24px 40px;
+}
+
+.group-workspace__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.group-workspace__side {
+  min-width: 0;
+}
+
+/* El calendario deja de ser tarjeta suelta: va en su columna. */
+.group-workspace__side .activity {
+  margin: 0;
+}
+
+/* Pantallas anchas: hallazgos ~60% y calendario ~40%, con el calendario fijo al hacer scroll. */
+@media (min-width: 1200px) {
+  .group-workspace__grid {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  }
+
+  .group-workspace__side--sticky {
+    position: sticky;
+    top: 16px;
+  }
+}

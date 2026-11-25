@@ -78,3 +78,22 @@
   font-style: italic;
   opacity: 0.7;
 }
+
+/* Interacción suave: la tarjeta se separa un poco al pasar el mouse. */
+.finding-card {
+  transition: box-shadow var(--motion-fast) var(--motion-ease);
+}
+
+.finding-card:hover {
+  box-shadow: 0 2px 8px var(--color-shadow);
+}
+
+.finding-card__chip {
+  transition:
+    background var(--motion-fast) var(--motion-ease),
+    border-color var(--motion-fast) var(--motion-ease);
+}
+
+.finding-card__chip:hover {
+  border-color: var(--color-accent);
+}

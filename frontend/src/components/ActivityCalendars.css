@@ -50,7 +50,8 @@
 .activity__legend {
   display: flex;
   align-items: center;
-  gap: 18px;
+  flex-wrap: wrap;
+  gap: 8px 18px;
   margin-top: 14px;
   font-size: var(--text-xs);
   color: var(--color-text-muted);

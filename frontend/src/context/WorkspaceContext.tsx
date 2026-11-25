@@ -10,6 +10,7 @@ import { fetchCommits } from "../api/commitsClient";
 import { activateRubricVersion } from "../api/dbClient";
 import type { ImportCounts } from "../api/dbClient";
 import { addRecent } from "../utils/recentGroups";
+import { createDateStore } from "../utils/taskDates";
 import type { RecentGroup } from "../utils/recentGroups";
 import { parseRepoUrl } from "../utils/repoUrl";
 import type { ParsedRepo } from "../utils/repoUrl";
@@ -62,6 +63,10 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
   const [active, setActive] = useState<ParsedRepo | null>(null);
   const [showHome, setShowHome] = useState(false);
+  /** Lo mismo que `showHome`, para leerlo en callbacks y en popstate sin volver a crearlos. */
+  const homeRef = useRef(false);
+  /** Dónde estaba el scroll del grupo al ir al inicio, para dejarlo igual al volver. */
+  const savedScrollRef = useRef(0);
   const [commits, setCommits] = useState<CommitsState>({ status: "loading" });
   const [pendingUrl, setPendingUrl] = useState<string | null>(null);
   const [openError, setOpenError] = useState<string | null>(null);
@@ -131,6 +136,16 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
           addRecent(readRecent(), { taskId: parsed.taskId, groupUrl: parsed.url, name: parsed.group }),
         );
         setActive(parsed);
+        // Abrir un grupo saca del inicio. La entrada de historial del inicio ya no sirve: se reemplaza
+        // para que «atrás» no pase por una pantalla que ya no está.
+        if (homeRef.current) {
+          homeRef.current = false;
+          try {
+            if (window.history.state?.tidHome) window.history.replaceState(null, "");
+          } catch {
+            // sin acceso al historial solo se pierde el botón «atrás» del navegador
+          }
+        }
         setShowHome(false);
         setCommits({ status: "success", data, loadedAt: new Date() });
         return true;
@@ -222,17 +237,33 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   );
 
   const activeTaskId = active?.taskId;
-  /** Cambia una fecha y la guarda; si el backend falla se restaura la anterior y se avisa. */
+  /**
+   * Cambia una fecha y la guarda. Un guardado por tarea a la vez y en orden; si falla, la pantalla
+   * vuelve a lo que dice el backend (ver createDateStore).
+   */
+  const dateStoresRef = useRef<Record<string, ReturnType<typeof createDateStore>>>({});
   const changeDate = useCallback(
     (key: "startDate" | "endDate", value: string) => {
       if (!activeTaskId) return;
-      const previous = (tasksRef.current[activeTaskId] ?? emptyTask())[key];
-      updateTask(activeTaskId, (t) => ({ ...t, [key]: value }));
-      const { startDate, endDate } = tasksRef.current[activeTaskId];
-      saveTaskDates(activeTaskId, startDate, endDate).catch((err: unknown) => {
-        updateTask(activeTaskId, (t) => ({ ...t, [key]: previous }));
-        setWriteError(backendErrorText(err));
-      });
+      const taskId = activeTaskId;
+      let store = dateStoresRef.current[taskId];
+      if (!store) {
+        store = createDateStore({
+          get: () => {
+            const t = tasksRef.current[taskId] ?? emptyTask();
+            return { startDate: t.startDate, endDate: t.endDate };
+          },
+          set: (dates) => updateTask(taskId, (t) => ({ ...t, ...dates })),
+          save: (dates) => saveTaskDates(taskId, dates.startDate, dates.endDate),
+          reload: async () => {
+            const loaded = await loadTask(taskId);
+            return { startDate: loaded.startDate, endDate: loaded.endDate };
+          },
+          onError: (err) => setWriteError(backendErrorText(err)),
+        });
+        dateStoresRef.current[taskId] = store;
+      }
+      store.change(key, value);
     },
     [activeTaskId, updateTask],
   );
@@ -291,7 +322,48 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     return { taskStart: start, taskEnd: end, datesError: null };
   }, [task.startDate, task.endDate]);
 
-  const goHome = useCallback(() => setShowHome(true), []);
+  /** Ir al inicio no borra nada; agrega una entrada al historial para que «atrás» vuelva al grupo. */
+  const goHome = useCallback(() => {
+    if (homeRef.current) return;
+    homeRef.current = true;
+    savedScrollRef.current = window.scrollY;
+    try {
+      window.history.pushState({ tidHome: true }, "");
+    } catch {
+      // sin acceso al historial el inicio funciona igual, sin el botón «atrás»
+    }
+    setShowHome(true);
+  }, []);
+  const leaveHome = useCallback(() => {
+    if (!homeRef.current) return;
+    // Si la entrada actual del historial es el inicio, se retrocede (popstate apaga el inicio).
+    try {
+      if (window.history.state?.tidHome) {
+        window.history.back();
+        return;
+      }
+    } catch {
+      // se apaga igual más abajo
+    }
+    homeRef.current = false;
+    setShowHome(false);
+  }, []);
+
+  // El botón «atrás» (y «adelante») del navegador: la entrada con `tidHome` es el inicio.
+  useEffect(() => {
+    const onPopState = (event: PopStateEvent) => {
+      const home = !!event.state?.tidHome;
+      homeRef.current = home;
+      setShowHome(home);
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
+  // Al ir al inicio la pantalla parte arriba; al volver, el grupo queda donde estaba.
+  useEffect(() => {
+    window.scrollTo(0, showHome ? 0 : savedScrollRef.current);
+  }, [showHome]);
   const savedGroups = useMemo<RecentGroup[]>(
     () =>
       [...taskIds].reverse().flatMap((id) =>
@@ -303,6 +375,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const value: WorkspaceValue = {
     showHome,
     goHome,
+    leaveHome,
     savedGroups,
     active,
     commits,

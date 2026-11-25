@@ -1,5 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { useContainerWidth } from "../hooks/useContainerWidth";
+import { useAnalysis } from "../context/useAnalysis";
 import { useEvidence } from "../context/useEvidence";
 import { useWorkspace } from "../context/useWorkspace";
 import {
@@ -40,12 +42,17 @@ function focusField(name: string) {
   root?.querySelector<HTMLInputElement>("input")?.focus();
 }
 
+/** Con las columnas apiladas (menos de 1200px) el calendario queda debajo de los hallazgos. */
+const STACKED_QUERY = "(max-width: 1199px)";
+
 export default function ActivityCalendars({
   onCommitClick,
 }: {
   onCommitClick: (hash: string) => void;
 }) {
-  const { commits: state, taskStart, taskEnd } = useWorkspace();
+  const { commits: state, taskStart, taskEnd, goHome } = useWorkspace();
+  const { setConfigOpen } = useAnalysis();
+  const sectionRef = useRef<HTMLElement>(null);
   const [selected, setSelected] = useState<{ day: string; author: string | null } | null>(null);
   const [rowsRef, rowsWidth] = useContainerWidth(900);
 
@@ -65,6 +72,15 @@ export default function ActivityCalendars({
       }
     }
   }
+
+  // Con las columnas apiladas, un chip de evidencia que salta a un día lleva la pantalla hasta el
+  // calendario para que se vea el efecto (sin animación con prefers-reduced-motion).
+  const nonce = focusRequest?.nonce ?? 0;
+  useEffect(() => {
+    if (nonce === 0 || !window.matchMedia(STACKED_QUERY).matches) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    sectionRef.current?.scrollIntoView({ block: "start", behavior: reduced ? "auto" : "smooth" });
+  }, [nonce]);
 
   const startKey = taskStart ? dayKeyOfLocalDate(taskStart) : null;
   const endKey = taskEnd ? dayKeyOfLocalDate(taskEnd) : null;
@@ -89,8 +105,8 @@ export default function ActivityCalendars({
             text="Este repositorio no tiene commits de trabajo (los merges no se cuentan). Si es el repositorio equivocado, puedes abrir otro."
             title="No hay commits para mostrar"
           >
-            <button onClick={() => focusField("repo")} type="button">
-              Abrir otro repositorio
+            <button onClick={goHome} type="button">
+              Abrir grupo o tarea
             </button>
           </EmptyState>
           {mergeOnlyNote}
@@ -137,7 +153,14 @@ export default function ActivityCalendars({
             text="Todos los commits de este grupo están fuera de las fechas de la tarea. Revisa que el inicio y la entrega sean los correctos."
             title="No hay commits entre el inicio y la entrega"
           >
-            <button onClick={() => focusField("dates")} type="button">
+            <button
+              onClick={() => {
+                // La configuración puede estar plegada: se abre antes de llevar el cursor a las fechas.
+                flushSync(() => setConfigOpen(true));
+                focusField("dates");
+              }}
+              type="button"
+            >
               Cambiar fechas
             </button>
           </EmptyState>
@@ -204,7 +227,7 @@ export default function ActivityCalendars({
   })();
 
   return (
-    <section className="activity" data-tour="calendar">
+    <section className="activity" data-tour="calendar" ref={sectionRef}>
       <h2 className="activity__title">Actividad diaria de contribuidores</h2>
 
       {state.status === "loading" && <p className="activity__loading">Cargando commits...</p>}

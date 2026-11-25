@@ -15,7 +15,7 @@ type State =
 /** Archivo del repo (bitácora o autoría) con las líneas citadas resaltadas y a la vista. */
 export default function ArtifactViewer({ view }: { view: ArtifactView }) {
   const { closeViewer } = useEvidence();
-  const { active } = useWorkspace();
+  const { active, showHome } = useWorkspace();
   const repoUrl = active?.url ?? "";
   const [state, setState] = useState<State>({ status: "loading" });
   const firstMarked = useRef<HTMLDivElement | null>(null);
@@ -35,10 +35,12 @@ export default function ArtifactViewer({ view }: { view: ArtifactView }) {
   }, [state]);
 
   useEffect(() => {
+    // Con el inicio abierto el visor sigue montado pero oculto: Escape no debe cerrarlo a escondidas.
+    if (showHome) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && closeViewer();
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [closeViewer]);
+  }, [closeViewer, showHome]);
 
   const name = ARTIFACT_NAMES[view.kind];
 

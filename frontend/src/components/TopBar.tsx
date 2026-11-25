@@ -65,6 +65,17 @@ export default function TopBar() {
               ))}
             </select>
           </label>
+          <button
+            className="top-bar__open"
+            onClick={goHome}
+            title="Ir al inicio para abrir otro grupo o una tarea completa"
+            type="button"
+          >
+            <svg aria-hidden="true" fill="none" height="14" stroke="currentColor" strokeLinecap="round" strokeWidth="2.4" viewBox="0 0 24 24" width="14">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            Abrir grupo o tarea
+          </button>
           </>
         )}
           <label className="top-bar__select" title="Idioma en que responde la IA">

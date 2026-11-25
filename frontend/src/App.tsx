@@ -1,14 +1,10 @@
 import { Fragment, useEffect } from "react";
 import { BackendNotices, BackendStatusScreen } from "./components/BackendNotices";
-import ActivityCalendars from "./components/ActivityCalendars";
 import ArtifactViewer from "./components/ArtifactViewer";
 import CommitDetailPanel from "./components/CommitDetailPanel";
 import { TourLauncher } from "./components/Tour";
-import RepoHeader from "./components/RepoHeader";
-import RepoUrlField from "./components/RepoUrlField";
-import TaskDateFields from "./components/TaskDateFields";
 import TopBar from "./components/TopBar";
-import TriangulationPanel from "./components/TriangulationPanel";
+import GroupWorkspace from "./components/GroupWorkspace";
 import LlmSettings from "./components/LlmSettings";
 import WelcomeScreen from "./components/WelcomeScreen";
 import BatchDialogHost from "./components/BatchDialogHost";
@@ -35,27 +31,28 @@ function AppContent() {
   }, [activeUrl, closeCommit, closeViewer, setHighlighted]);
 
   if (backendStatus !== "ready") return <BackendStatusScreen />;
-  if (!active || showHome) return <WelcomeScreen />;
+  if (!active) return <WelcomeScreen />;
 
+  // Con el inicio abierto el grupo sigue montado (solo oculto): así vuelve tal como estaba, con sus
+  // filtros, su día elegido y hasta un análisis en curso, que no se cancela.
   return (
-    <div className="app">
-      <TourLauncher />
-      <TopBar />
-      <BackendNotices />
-      <RepoUrlField />
-      <TaskDateFields />
-      <RepoHeader />
-      {/* Una sola key por grupo: al cambiar de grupo se desmonta todo lo que depende de él. */}
-      <Fragment key={active.url}>
-        <AnalysisProvider>
-          <TriangulationPanel />
-          <ActivityCalendars onCommitClick={openCommit} />
-        </AnalysisProvider>
-      </Fragment>
+    <>
+      {showHome && <WelcomeScreen />}
+      <div className="app" hidden={showHome}>
+        {!showHome && <TourLauncher />}
+        <TopBar />
+        <BackendNotices />
+        {/* Una sola key por grupo: al cambiar de grupo se desmonta todo lo que depende de él. */}
+        <Fragment key={active.url}>
+          <AnalysisProvider>
+            <GroupWorkspace onCommitClick={openCommit} />
+          </AnalysisProvider>
+        </Fragment>
 
-      {selectedCommit && <CommitDetailPanel commitHash={selectedCommit} key={selectedCommit} onClose={closeCommit} />}
-      {viewer && <ArtifactViewer view={viewer} />}
-    </div>
+        {selectedCommit && <CommitDetailPanel commitHash={selectedCommit} key={selectedCommit} onClose={closeCommit} />}
+        {viewer && <ArtifactViewer view={viewer} />}
+      </div>
+    </>
   );
 }
 

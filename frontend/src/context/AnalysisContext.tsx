@@ -31,6 +31,7 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
   const [history, setHistory] = useState<StoredAnalysis[]>([]);
   const [editing, setEditing] = useState(false);
   const [rubricInfo, setRubricInfo] = useState<string | null>(null);
+  const [configOpen, setConfigOpen] = useState<boolean | null>(null);
   const { config, language } = useLlmConfig();
   const controllerRef = useRef<AbortController | null>(null);
   const activeUrl = active?.url;
@@ -164,7 +165,19 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
 
   return (
     <AnalysisContext.Provider
-      value={{ state, setState, history, editing, setEditing, rubricInfo, presence, runAnalysis, saveRubricVersion }}
+      value={{
+        state,
+        setState,
+        history,
+        editing,
+        setEditing,
+        rubricInfo,
+        configOpen,
+        setConfigOpen,
+        presence,
+        runAnalysis,
+        saveRubricVersion,
+      }}
     >
       {children}
     </AnalysisContext.Provider>

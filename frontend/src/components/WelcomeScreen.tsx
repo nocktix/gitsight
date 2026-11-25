@@ -49,7 +49,7 @@ const BATCH_ICON = (
  * (en ese caso no se borra nada: los accesos rápidos devuelven al grupo anterior).
  */
 export default function WelcomeScreen() {
-  const { pendingUrl, openError, openGroup, detectTask, savedGroups } = useWorkspace();
+  const { active, showHome, leaveHome, pendingUrl, openError, openGroup, detectTask, savedGroups } = useWorkspace();
   const [value, setValue] = useState("");
   const [touched, setTouched] = useState(false);
   const [open, setOpen] = useState<CardId | null>("group");
@@ -78,6 +78,11 @@ export default function WelcomeScreen() {
     <div className="welcome">
       <TopBar />
       <main className="welcome__main">
+        {active && showHome && (
+          <button className="welcome__back" onClick={leaveHome} type="button">
+            ← Volver a {active.group}
+          </button>
+        )}
         <WelcomeHeader />
         <WelcomeSteps />
         <div className="welcome__cards">
