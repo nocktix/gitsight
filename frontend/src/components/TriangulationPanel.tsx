@@ -1,7 +1,4 @@
-import { useEffect, useRef, useState } from "react";
-import { fetchAnalysis } from "../api/analyzeClient";
-import { BackendError } from "../api/http";
-import { INCLUDE_AUTHORSHIP, INCLUDE_PROMPT_LOG } from "../config";
+import { useAnalysis } from "../context/useAnalysis";
 import { useLlmConfig } from "../context/useLlmConfig";
 import { useWorkspace } from "../context/useWorkspace";
 import type { Finding } from "../types/analyze";
@@ -12,36 +9,14 @@ import {
   historyLabel,
   latestCommitHashes,
 } from "../utils/analysisHistory";
-import { loadAnalysisHistory } from "../utils/analysisStore";
-import { llmRequest } from "../utils/llmConfig";
-import type { StoredAnalysis } from "../utils/analysisStore";
-import { fetchArtifact } from "../api/artifactsClient";
 import { missingArtifacts } from "../utils/emptyStates";
-import type { ArtifactPresence } from "../utils/emptyStates";
 import EmptyState from "./EmptyState";
 import FindingCard from "./FindingCard";
 import LlmErrorRetry from "./LlmErrorRetry";
 import LlmNotConfigured from "./LlmNotConfigured";
 import RubricField from "./RubricField";
-import type { RubricSubmit } from "./RubricField";
 import RubricSection from "./RubricSection";
 import "./TriangulationPanel.css";
-
-type PanelState =
-  | { status: "restoring" } // leyendo el último análisis guardado en el backend
-  | { status: "idle" }
-  | { status: "loading" }
-  | {
-      status: "error";
-      message: string;
-      /** Si el error viene del LLM: código, modelo que falló y datos para reintentar. */
-      llm?: {
-        code: string | null;
-        failedModel: string | null;
-        rubricVersion: number | null;
-      };
-    }
-  | { status: "success"; viewing: StoredAnalysis };
 
 /** Criterios en el orden en que aparecen; los hallazgos generales (criterion null) van aparte. */
 function groupFindings(findings: Finding[]) {
@@ -66,146 +41,19 @@ function groupFindings(findings: Finding[]) {
  * reemplaza uno anterior). Con más de uno se ofrece el historial. Editar la rúbrica
  * (`editing`) es independiente del resultado mostrado.
  */
+/**
+ * Panel de triangulación: muestra el resultado del análisis y los controles. El estado (análisis,
+ * historial, edición de la rúbrica) vive en AnalysisProvider.
+ */
 export default function TriangulationPanel() {
-  const { active, task, taskStart, taskEnd, saveRubric, commits } = useWorkspace();
-  const [state, setState] = useState<PanelState>({ status: "restoring" });
-  /** Análisis del grupo, el más reciente primero. */
-  const [history, setHistory] = useState<StoredAnalysis[]>([]);
-  const [editing, setEditing] = useState(false);
-  const [rubricInfo, setRubricInfo] = useState<string | null>(null);
-  const { config, language } = useLlmConfig();
-  const controllerRef = useRef<AbortController | null>(null);
-  const activeUrl = active?.url;
-  /** Qué archivos del repo existen (bitácora y autoría); null mientras se consulta. */
-  const [presence, setPresence] = useState<ArtifactPresence[] | null>(null);
-
-  useEffect(() => {
-    if (!activeUrl) return;
-    const controller = new AbortController();
-    Promise.all([
-      fetchArtifact("prompt_log", activeUrl, controller.signal),
-      fetchArtifact("authorship", activeUrl, controller.signal),
-    ])
-      .then(([log, authorship]) =>
-        setPresence([
-          { expected: log.expected_filename, label: "la bitácora de prompts", found: log.exists },
-          { expected: authorship.expected_filename, label: "la declaración de autoría", found: authorship.exists },
-        ]),
-      )
-      .catch(() => {
-        // sin esta consulta el aviso simplemente no se muestra: el análisis informa lo que falte
-      });
-    return () => controller.abort();
-  }, [activeUrl]);
-
-  useEffect(() => () => controllerRef.current?.abort(), []);
-
-  useEffect(() => {
-    if (!activeUrl) return;
-    let cancelled = false;
-    // Si el evaluador ya lanzó un análisis mientras tanto, ese resultado manda.
-    const apply = (next: PanelState) =>
-      setState((prev) => (!cancelled && prev.status === "restoring" ? next : prev));
-    loadAnalysisHistory(activeUrl)
-      .then((saved) => {
-        if (cancelled) return;
-        setHistory(saved);
-        apply(saved.length > 0 ? { status: "success", viewing: saved[0] } : { status: "idle" });
-      })
-      .catch((err: unknown) =>
-        apply({
-          status: "error",
-          message: err instanceof Error ? err.message : "No se pudo conectar con el backend",
-        }),
-      );
-    return () => {
-      cancelled = true;
-    };
-  }, [activeUrl]);
+  const { active, task, taskEnd, commits } = useWorkspace();
+  const { config } = useLlmConfig();
+  const { state, setState, history, editing, setEditing, rubricInfo, presence, runAnalysis, saveRubricVersion } =
+    useAnalysis();
 
   if (!active) return null;
-  const repoUrl = active.url;
-  const taskId = active.taskId;
   const hasRubric = task.rubric !== null && task.rubric.trim() !== "";
   const deadlineMissing = !taskEnd;
-
-  /** `rubricVersion` null: el backend usa la versión activa de la tarea (o ninguna si no hay). */
-  function runAnalysis(rubricVersion: number | null) {
-    if (!config) return;
-    setRubricInfo(null);
-    const { llm, apiKey } = llmRequest(config);
-    controllerRef.current?.abort();
-    const controller = new AbortController();
-    controllerRef.current = controller;
-    setState({ status: "loading" });
-
-    fetchAnalysis(
-      {
-        repo_url: repoUrl,
-        include_prompt_log: INCLUDE_PROMPT_LOG,
-        include_authorship: INCLUDE_AUTHORSHIP,
-        task_id: taskId,
-        llm,
-        language,
-        ...(rubricVersion !== null ? { rubric_version: rubricVersion } : {}),
-        ...(taskStart ? { task_start: task.startDate } : {}),
-        ...(taskEnd ? { task_deadline: task.endDate } : {}),
-      },
-      apiKey,
-      controller.signal,
-    )
-      .then(async (data) => {
-        // El backend ya guardó el análisis nuevo: se relee el historial para tener su fila.
-        const saved = await loadAnalysisHistory(repoUrl).catch(() => null);
-        if (controller.signal.aborted) return;
-        let viewing = saved?.find((a) => a.createdAt === data.timestamp);
-        if (!viewing) {
-          // No se pudo leer la fila: el resultado se muestra igual, solo en pantalla.
-          viewing = {
-            id: -1,
-            data,
-            model: data.model_used,
-            rubricVersion: data.rubric_version ?? null,
-            rubricState:
-              data.rubric_version != null
-                ? "version"
-                : data.sources_used.includes("rubric")
-                  ? "unknown"
-                  : "none",
-            headCommit: null,
-            createdAt: data.timestamp,
-          };
-          setHistory([viewing, ...(saved ?? [])]);
-        } else {
-          setHistory(saved ?? []);
-        }
-        setState({ status: "success", viewing });
-      })
-      .catch((err: Error) => {
-        if (err.name === "AbortError") return;
-        setState({
-          status: "error",
-          message: err.message,
-          ...(err instanceof BackendError && err.isLlmError
-            ? { llm: { code: err.code, failedModel: err.modelAttempted, rubricVersion } }
-            : {}),
-        });
-      });
-  }
-
-  /** Aviso tras guardar una versión de la rúbrica sin analizar. */
-  const saveRubricVersion = async ({ text, filename, note }: RubricSubmit) => {
-    // Si no se guarda (el error se avisa aparte), el editor queda abierto con el texto.
-    const saved = await saveRubric(text, { filename, note });
-    if (saved === null) return null;
-    setEditing(false);
-    setRubricInfo(
-      saved.created
-        ? `Se guardó la versión v${saved.version} y quedó activa para los próximos análisis de todos los grupos de la tarea.`
-        : `El texto es igual al de la versión v${saved.version}: no se creó una versión nueva y v${saved.version} quedó activa.`,
-    );
-    return saved.version;
-  };
 
   const missing = presence ? missingArtifacts(presence) : [];
   const latestHashes = commits.status === "success" ? latestCommitHashes(commits.data) : null;

@@ -15,6 +15,7 @@ import BatchDialogHost from "./components/BatchDialogHost";
 import { useEvidence } from "./context/useEvidence";
 import { useLlmConfig } from "./context/useLlmConfig";
 import { useWorkspace } from "./context/useWorkspace";
+import { AnalysisProvider } from "./context/AnalysisContext";
 import { BatchProvider } from "./context/BatchContext";
 import { WorkspaceProvider } from "./context/WorkspaceContext";
 import "./App.css";
@@ -46,8 +47,10 @@ function AppContent() {
       <RepoHeader />
       {/* Una sola key por grupo: al cambiar de grupo se desmonta todo lo que depende de él. */}
       <Fragment key={active.url}>
-        <TriangulationPanel />
-        <ActivityCalendars onCommitClick={openCommit} />
+        <AnalysisProvider>
+          <TriangulationPanel />
+          <ActivityCalendars onCommitClick={openCommit} />
+        </AnalysisProvider>
       </Fragment>
 
       {selectedCommit && <CommitDetailPanel commitHash={selectedCommit} key={selectedCommit} onClose={closeCommit} />}
