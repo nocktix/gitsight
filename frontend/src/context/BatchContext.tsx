@@ -60,6 +60,7 @@ export function BatchProvider({ children }: { children: ReactNode }) {
   const [awaitingModel, setAwaitingModel] = useState(false);
   /** El editor de rúbrica se abrió desde el diálogo "Esta tarea no tiene rúbrica". */
   const [editorFromPrompt, setEditorFromPrompt] = useState(false);
+  const [analyzedGroups, setAnalyzedGroups] = useState<Record<string, number>>({});
   const controllerRef = useRef<AbortController | null>(null);
 
   // Si el proveedor se desmonta (cierra la app), no dejar pedidos en vuelo.
@@ -135,8 +136,13 @@ export function BatchProvider({ children }: { children: ReactNode }) {
           concurrency: BATCH_CONCURRENCY,
           rateLimitWaitMs: BATCH_RATE_LIMIT_WAIT_MS,
           classify: classifyBatchError,
-          onStatus: (i, state) =>
-            setStates((prev) => prev.map((s, k) => (k === queue[i].index ? state : s))),
+          onStatus: (i, state) => {
+            setStates((prev) => prev.map((s, k) => (k === queue[i].index ? state : s)));
+            if (state.status === "done") {
+              const url = queue[i].group.url;
+              setAnalyzedGroups((prev) => ({ ...prev, [url]: (prev[url] ?? 0) + 1 }));
+            }
+          },
         },
       );
       if (result.stopped) setStopped(toStop(result.stopped.error));
@@ -246,6 +252,7 @@ export function BatchProvider({ children }: { children: ReactNode }) {
       error,
       summary,
       stopped,
+      analyzedGroups,
       analyzable,
       finished,
       remaining,
@@ -269,7 +276,7 @@ export function BatchProvider({ children }: { children: ReactNode }) {
       closeDialog: () => setDialogOpen(false),
     };
   }, [
-    folder, scan, states, scanning, running, error, summary, stopped, dialogOpen,
+    folder, scan, states, scanning, running, error, summary, stopped, analyzedGroups, dialogOpen,
     scanFolder, requestAnalyze, checking, noRubricPrompt, analyzeWithoutRubric,
     addRubricFromPrompt, rubricEditorOpen, openRubricEditor, closeRubricEditor,
     saveBatchRubric, shownNotice, cancel, openGroup,

@@ -20,6 +20,8 @@ export interface BatchValue {
   error: string | null;
   summary: string | null;
   stopped: BatchStop | null;
+  /** Cuántos análisis ha terminado el lote por grupo (url); sube cuando un grupo queda analizado. */
+  analyzedGroups: Record<string, number>;
 
   /** Grupos con commits legibles (los que se pueden analizar). */
   analyzable: number;

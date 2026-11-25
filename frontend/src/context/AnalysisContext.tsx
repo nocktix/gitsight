@@ -5,10 +5,12 @@ import { fetchArtifact } from "../api/artifactsClient";
 import { BackendError } from "../api/http";
 import type { RubricSubmit } from "../components/RubricField";
 import { INCLUDE_AUTHORSHIP, INCLUDE_PROMPT_LOG } from "../config";
+import { stateAfterExternalAnalysis } from "../utils/analysisRefresh";
 import { loadAnalysisHistory } from "../utils/analysisStore";
 import type { StoredAnalysis } from "../utils/analysisStore";
 import type { ArtifactPresence } from "../utils/emptyStates";
 import { llmRequest } from "../utils/llmConfig";
+import { useBatch } from "./useBatch";
 import { AnalysisContext } from "./useAnalysis";
 import type { PanelState } from "./useAnalysis";
 import { useLlmConfig } from "./useLlmConfig";
@@ -34,6 +36,7 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
   const [configOpen, setConfigOpen] = useState<boolean | null>(null);
   const { config, language } = useLlmConfig();
   const controllerRef = useRef<AbortController | null>(null);
+  const { analyzedGroups } = useBatch();
   const activeUrl = active?.url;
   /** Qué archivos del repo existen (bitácora y autoría); null mientras se consulta. */
   const [presence, setPresence] = useState<ArtifactPresence[] | null>(null);
@@ -81,6 +84,28 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
       cancelled = true;
     };
   }, [activeUrl]);
+
+  // El lote analizó este grupo mientras estaba abierto: se relee el historial y, si la vista
+  // estaba vacía, se muestra el análisis nuevo (sin esto seguía diciendo "Aún no hay un análisis").
+  const batchRevision = activeUrl ? (analyzedGroups[activeUrl] ?? 0) : 0;
+  const seenRevision = useRef(batchRevision);
+  useEffect(() => {
+    if (!activeUrl || batchRevision === seenRevision.current) return;
+    seenRevision.current = batchRevision;
+    let cancelled = false;
+    loadAnalysisHistory(activeUrl)
+      .then((saved) => {
+        if (cancelled) return;
+        setHistory(saved);
+        setState((prev) => stateAfterExternalAnalysis(prev, saved));
+      })
+      .catch(() => {
+        // si no se puede leer, la vista queda como estaba; recargar la página la actualiza
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [activeUrl, batchRevision]);
 
   const repoUrl = active?.url;
   const taskId = active?.taskId;
