@@ -37,19 +37,19 @@
 
 .tour__progress {
   margin: 0;
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   color: var(--color-text-muted);
 }
 
 .tour__title {
   margin: 2px 0 6px;
-  font-size: 1.05rem;
+  font-size: var(--text-lg);
   color: var(--color-heading);
 }
 
 .tour__text {
   margin: 0;
-  font-size: 0.88rem;
+  font-size: var(--text-sm);
   line-height: 1.45;
   color: var(--color-text);
 }
@@ -72,7 +72,7 @@
   color: var(--color-text-muted);
   cursor: pointer;
   font: inherit;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
 }
 
 .tour__actions button.tour__next {

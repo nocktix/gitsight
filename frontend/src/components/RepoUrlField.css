@@ -13,7 +13,7 @@
 }
 
 .repo-url-field__label {
-  font-size: 0.82rem;
+  font-size: var(--text-sm);
   color: var(--color-text-muted);
   white-space: nowrap;
 }
@@ -24,7 +24,7 @@
   border: 1px solid var(--color-border-strong);
   border-radius: 6px;
   background: var(--color-surface);
-  font-size: 0.88rem;
+  font-size: var(--text-sm);
   color: var(--color-text);
   font-family: inherit;
 }
@@ -39,7 +39,7 @@
 
 .repo-url-field__error {
   margin: 6px 0 0;
-  font-size: 0.78rem;
+  font-size: var(--text-xs);
   color: var(--color-alert-text);
 }
 
@@ -51,7 +51,7 @@
   background: var(--color-primary);
   color: var(--color-on-primary);
   font: inherit;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   font-weight: 600;
   cursor: pointer;
 }
@@ -74,7 +74,7 @@
   background: transparent;
   color: var(--color-text);
   font: inherit;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   white-space: nowrap;
   cursor: pointer;
 }

@@ -16,7 +16,7 @@
 
 .diff-viewer__filename {
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   font-weight: 600;
   color: var(--color-text);
   word-break: break-all;
@@ -24,7 +24,7 @@
 
 .diff-viewer__badge {
   flex-shrink: 0;
-  font-size: 0.72rem;
+  font-size: var(--text-xs);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.02em;
@@ -55,14 +55,14 @@
 .diff-viewer__binary {
   margin: 0;
   padding: 14px;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   color: var(--color-text-muted);
   font-style: italic;
 }
 
 .diff-viewer__lines {
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  font-size: 0.8rem;
+  font-size: var(--text-sm);
   line-height: 1.5;
   overflow-x: auto;
 }

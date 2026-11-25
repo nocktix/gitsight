@@ -13,20 +13,20 @@
 .batch__task,
 .batch__count {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   color: var(--color-text-muted);
 }
 
 .batch__warning {
   margin: 0;
-  font-size: 0.82rem;
+  font-size: var(--text-sm);
   color: var(--color-alert-text);
 }
 
 .batch__table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
 }
 
 .batch__table th,
@@ -43,7 +43,7 @@
 
 .batch__message {
   display: block;
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
 }
 
 .batch__actions {
@@ -74,7 +74,7 @@
 
 .batch__hint {
   margin: 0;
-  font-size: 0.82rem;
+  font-size: var(--text-sm);
   color: var(--color-text-muted);
 }
 
@@ -96,7 +96,7 @@
   padding: 10px 12px;
   border: 1px solid var(--color-alert-text);
   border-radius: 8px;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
 }
 
 .batch__stopped p {
@@ -108,5 +108,5 @@
   padding: 0 6px;
   border-radius: 999px;
   background: var(--color-border);
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
 }

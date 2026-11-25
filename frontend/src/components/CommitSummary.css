@@ -15,7 +15,7 @@
 
 .commit-summary__title {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: var(--text-md);
 }
 
 .commit-summary button {
@@ -24,7 +24,7 @@
   border-radius: 8px;
   background: var(--color-surface);
   font: inherit;
-  font-size: 0.82rem;
+  font-size: var(--text-sm);
   cursor: pointer;
 }
 
@@ -44,32 +44,32 @@
 .commit-summary__status,
 .commit-summary__meta {
   margin: 6px 0 0;
-  font-size: 0.78rem;
+  font-size: var(--text-xs);
   color: var(--color-text-muted);
 }
 
 .commit-summary__note {
   margin: 8px 0 0;
-  font-size: 0.8rem;
+  font-size: var(--text-sm);
   color: var(--color-text);
 }
 
 .commit-summary__text,
 .commit-summary__check {
   margin: 10px 0 0;
-  font-size: 0.88rem;
+  font-size: var(--text-sm);
   line-height: 1.45;
 }
 
 .commit-summary__files {
   margin: 10px 0 0;
   padding-left: 18px;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
 }
 
 .commit-summary__error {
   margin: 8px 0 0;
-  font-size: 0.82rem;
+  font-size: var(--text-sm);
   color: var(--color-alert-text);
 }
 

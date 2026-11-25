@@ -9,7 +9,7 @@
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
 }
 
 .rubric-field__file {
@@ -25,13 +25,13 @@
 
 .rubric-field__status {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   color: var(--color-text-muted);
 }
 
 .rubric-field__error {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   color: var(--color-alert-text);
 }
 
@@ -41,7 +41,7 @@
   border: 1px solid var(--color-border-strong);
   border-radius: 8px;
   font: inherit;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   resize: vertical;
 }
 
@@ -55,7 +55,7 @@
   padding: 8px 14px;
   border-radius: 8px;
   font: inherit;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   cursor: pointer;
 }
 

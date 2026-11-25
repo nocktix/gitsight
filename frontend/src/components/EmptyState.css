@@ -15,7 +15,7 @@
 }
 
 .empty-state__text {
-  font-size: 0.88rem;
+  font-size: var(--text-sm);
   color: var(--color-text-muted);
 }
 

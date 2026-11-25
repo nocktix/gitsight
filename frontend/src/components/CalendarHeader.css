@@ -11,7 +11,7 @@
 
 .calendar-header__date,
 .calendar-header__weekday {
-  font-size: 10px;
+  font-size: var(--text-chart);
   line-height: 14px;
   color: var(--color-text-muted);
   white-space: nowrap;

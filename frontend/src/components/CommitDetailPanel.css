@@ -55,7 +55,7 @@
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  font-size: 0.9rem;
+  font-size: var(--text-md);
   cursor: pointer;
   line-height: 1;
 }
@@ -74,7 +74,7 @@
 .commit-detail-panel__hash {
   display: inline-block;
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  font-size: 0.8rem;
+  font-size: var(--text-sm);
   color: var(--color-info-text);
   background: var(--color-info-bg);
   padding: 2px 8px;
@@ -84,20 +84,20 @@
 
 .commit-detail-panel__title {
   margin: 0 0 6px;
-  font-size: 1.15rem;
+  font-size: var(--text-lg);
   font-weight: 700;
   color: var(--color-heading);
 }
 
 .commit-detail-panel__meta {
   margin: 0;
-  font-size: 0.82rem;
+  font-size: var(--text-sm);
   color: var(--color-text-muted);
 }
 
 .commit-detail-panel__loading,
 .commit-detail-panel__error {
-  font-size: 0.9rem;
+  font-size: var(--text-md);
   margin-top: 40px;
 }
 

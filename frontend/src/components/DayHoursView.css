@@ -6,13 +6,13 @@
 
 .day-hours__title {
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--text-md);
   font-weight: 600;
   color: var(--color-heading);
 }
 
 .day-hours__count {
-  font-size: 0.82rem;
+  font-size: var(--text-sm);
   color: var(--color-text-muted);
 }
 
@@ -21,7 +21,7 @@
   border-radius: 6px;
   background: var(--color-surface);
   padding: 4px 10px;
-  font-size: 0.82rem;
+  font-size: var(--text-sm);
   cursor: pointer;
 }
 
@@ -31,7 +31,7 @@
 
 .day-hours__hint {
   margin: 6px 0 16px;
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   color: var(--color-text-muted);
 }
 

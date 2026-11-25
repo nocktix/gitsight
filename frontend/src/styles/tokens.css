@@ -23,9 +23,8 @@
   --ocean-celeste-350: #7fd3e6;
   --ocean-celeste-400: #a5d3e3;
   --ocean-celeste-500: #20a4c3;
-  --ocean-celeste-600: #1795b3;
   --ocean-celeste-700: #137797;
-  --ocean-celeste-800: #0c6e88;
+  --ocean-celeste-850: #0a6580; /* enlaces: ≥5:1 sobre el fondo */
   /* Arena (acento cálido, con moderación) */
   --ocean-sand-100: #f6e9cf;
   --ocean-sand-200: #efe8d8;
@@ -39,8 +38,8 @@
   --ocean-paper-100: #faf7f0;
   --ocean-paper-200: #f4f1ea;
   --ocean-paper-300: #efe9db;
-  --ocean-paper-400: #e6e0d4;
-  --ocean-paper-700: #968d78;
+  --ocean-paper-500: #bdb39b; /* bordes de tarjetas */
+  --ocean-paper-700: #857c66; /* bordes de controles: ≥3:1 sobre fondo y tarjeta */
   --ocean-slate-600: #4a6270;
   --ocean-slate-300: #c5d6dd;
   /* Violeta suave (commits fuera de plazo) */
@@ -66,6 +65,19 @@
   --ocean-white-a85: rgba(255, 255, 255, 0.85);
   --ocean-ink-a18: rgba(15, 42, 54, 0.18);
   --ocean-ink-a45: rgba(15, 42, 54, 0.45);
+  --ocean-ink-a10: rgba(15, 42, 54, 0.1);
+  --ocean-ink-a08: rgba(15, 42, 54, 0.08);
+}
+
+/* --- Escala tipográfica (base 16px): solo estos tamaños --------------------------------- */
+:root {
+  --text-xs: 0.8125rem; /* 13px: etiquetas y metadatos */
+  --text-sm: 0.875rem; /* 14px: texto secundario, botones, campos */
+  --text-md: 1rem; /* 16px: texto normal */
+  --text-lg: 1.25rem; /* 20px: subtítulos de sección */
+  --text-xl: 1.625rem; /* 26px: títulos y cifras */
+  --text-brand: 2rem; /* 32px: solo el logotipo */
+  --text-chart: 0.6875rem; /* 11px: excepción, solo números del calendario y de los gráficos */
 }
 
 /* --- Capa semántica (modo claro) ------------------------------------------------------ */
@@ -76,14 +88,14 @@
   --color-surface: var(--ocean-paper-50);
   --color-surface-muted: var(--ocean-paper-100);
   --color-surface-hover: var(--ocean-paper-300);
-  --color-border: var(--ocean-paper-400);
-  --color-border-strong: var(--ocean-paper-700); /* bordes de controles: ~3:1 sobre la superficie */
+  --color-border: var(--ocean-paper-500);
+  --color-border-strong: var(--ocean-paper-700); /* bordes de controles: ≥3:1 sobre fondo y tarjeta */
 
   /* Texto */
   --color-text: var(--ocean-petrol-900);
   --color-text-muted: var(--ocean-slate-600);
   --color-heading: var(--ocean-petrol-700);
-  --color-link: var(--ocean-celeste-800);
+  --color-link: var(--ocean-celeste-850);
 
   /* Acciones y acento */
   --color-primary: var(--ocean-petrol-700);
@@ -92,7 +104,7 @@
   --color-on-primary-muted: var(--ocean-white-a85); /* blanco con transparencia sobre el petróleo */
   --color-accent: var(--ocean-celeste-500);
   --color-accent-strong: var(--ocean-celeste-700);
-  --color-focus: var(--ocean-celeste-600);
+  --color-focus: var(--ocean-celeste-700);
   --color-focus-on-primary: var(--ocean-paper-50);
   --color-accent-on-primary: var(--ocean-celeste-350); /* acento sobre el petróleo (mismo del logo en fondo oscuro) */
 
@@ -145,6 +157,7 @@
   /* Capas flotantes */
   --color-overlay: var(--ocean-ink-a45);
   --color-shadow: var(--ocean-ink-a18);
+  --shadow-card: 0 1px 2px var(--ocean-ink-a10), 0 2px 8px var(--ocean-ink-a08); /* solo secciones de primer nivel */
   --color-tooltip-bg: var(--ocean-petrol-900);
   --color-tooltip-text: var(--ocean-paper-50);
   --color-tooltip-muted: var(--ocean-slate-300);
