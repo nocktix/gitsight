@@ -1,0 +1,21 @@
+.welcome-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.welcome-header__title {
+  margin: 0;
+  font-size: var(--text-xl);
+  line-height: 1.2;
+  color: var(--color-heading);
+}
+
+.welcome-header__lead {
+  margin: 4px 0 0;
+  font-size: var(--text-md);
+  color: var(--color-text-muted);
+}

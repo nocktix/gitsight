@@ -76,7 +76,6 @@
   --text-md: 1rem; /* 16px: texto normal */
   --text-lg: 1.25rem; /* 20px: subtítulos de sección */
   --text-xl: 1.625rem; /* 26px: títulos y cifras */
-  --text-brand: 2rem; /* 32px: solo el logotipo */
   --text-chart: 0.6875rem; /* 11px: excepción, solo números del calendario y de los gráficos */
 }
 
@@ -100,6 +99,8 @@
   /* Acciones y acento */
   --color-primary: var(--ocean-petrol-700);
   --color-primary-hover: var(--ocean-petrol-800);
+  --color-primary-disabled-bg: var(--ocean-celeste-200);
+  --color-primary-disabled-text: var(--ocean-petrol-700);
   --color-on-primary: var(--ocean-paper-50);
   --color-on-primary-muted: var(--ocean-white-a85); /* blanco con transparencia sobre el petróleo */
   --color-accent: var(--ocean-celeste-500);

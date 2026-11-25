@@ -1,0 +1,99 @@
+.welcome-card {
+  min-width: 0;
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  transition:
+    transform var(--motion-fast) var(--motion-ease),
+    border-color var(--motion-fast) var(--motion-ease),
+    box-shadow var(--motion-fast) var(--motion-ease);
+}
+
+.welcome-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-accent);
+  box-shadow: 0 4px 14px var(--color-shadow);
+}
+
+/* Seleccionada: borde petróleo de 2px (gana al hover). */
+.welcome-card--open,
+.welcome-card--open:hover {
+  border-color: var(--color-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .welcome-card,
+  .welcome-card:hover {
+    transform: none;
+    transition: none;
+  }
+}
+
+.welcome-card__head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 20px 24px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.welcome-card__head:hover:not(:disabled) {
+  background: transparent;
+}
+
+.welcome-card__icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: var(--color-info-bg);
+  color: var(--color-info-text);
+}
+
+.welcome-card__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.welcome-card__title {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.welcome-card__subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.welcome-card__chevron {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+  transition: transform var(--motion-fast) var(--motion-ease);
+}
+
+.welcome-card--open .welcome-card__chevron {
+  transform: rotate(180deg);
+}
+
+.welcome-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 24px 24px;
+  animation: fade-in-up var(--motion-base) var(--motion-ease);
+}

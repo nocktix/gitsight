@@ -9,6 +9,8 @@ import type { ReactNode } from "react";
 import { fetchCommits } from "../api/commitsClient";
 import { activateRubricVersion } from "../api/dbClient";
 import type { ImportCounts } from "../api/dbClient";
+import { addRecent } from "../utils/recentGroups";
+import type { RecentGroup } from "../utils/recentGroups";
 import { parseRepoUrl } from "../utils/repoUrl";
 import type { ParsedRepo } from "../utils/repoUrl";
 import {
@@ -18,10 +20,12 @@ import {
   loadTaskIds,
   migrateGhostTasks,
   readLast,
+  readRecent,
   runMigrationOnce,
   saveTaskDates,
   saveTaskRubricVersion,
   writeLast,
+  writeRecent,
 } from "../utils/storage";
 import type { TaskData } from "../utils/storage";
 import { WorkspaceContext } from "./useWorkspace";
@@ -57,6 +61,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const [writeError, setWriteError] = useState<string | null>(null);
 
   const [active, setActive] = useState<ParsedRepo | null>(null);
+  const [showHome, setShowHome] = useState(false);
   const [commits, setCommits] = useState<CommitsState>({ status: "loading" });
   const [pendingUrl, setPendingUrl] = useState<string | null>(null);
   const [openError, setOpenError] = useState<string | null>(null);
@@ -122,7 +127,11 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
           lastGroupUrl: parsed.url,
         }));
         writeLast({ taskId: parsed.taskId, groupUrl: parsed.url });
+        writeRecent(
+          addRecent(readRecent(), { taskId: parsed.taskId, groupUrl: parsed.url, name: parsed.group }),
+        );
         setActive(parsed);
+        setShowHome(false);
         setCommits({ status: "success", data, loadedAt: new Date() });
         return true;
       } catch (err) {
@@ -282,7 +291,19 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     return { taskStart: start, taskEnd: end, datesError: null };
   }, [task.startDate, task.endDate]);
 
+  const goHome = useCallback(() => setShowHome(true), []);
+  const savedGroups = useMemo<RecentGroup[]>(
+    () =>
+      [...taskIds].reverse().flatMap((id) =>
+        [...(tasks[id]?.groups ?? [])].reverse().map((g) => ({ taskId: id, groupUrl: g.url, name: g.name })),
+      ),
+    [taskIds, tasks],
+  );
+
   const value: WorkspaceValue = {
+    showHome,
+    goHome,
+    savedGroups,
     active,
     commits,
     taskIds,

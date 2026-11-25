@@ -16,7 +16,7 @@ function formatLoadedAt(date: Date): string {
 }
 
 export default function TopBar() {
-  const { active, commits, taskIds, groups, openGroup, switchTask, pendingUrl } =
+  const { active, commits, taskIds, groups, openGroup, switchTask, pendingUrl, showHome, goHome } =
     useWorkspace();
   const { store, config, openSettings, language, setLanguage } = useLlmConfig();
   const { start: startTour } = useTour();
@@ -24,14 +24,14 @@ export default function TopBar() {
 
   return (
     <header className="top-bar" data-tour="topbar">
-      <span className="top-bar__title">
+      <button aria-label="Ir al inicio" className="top-bar__title" onClick={goHome} type="button">
         <img alt="" className="top-bar__logo" height={30} src="/logo-on-dark.svg" width={30} />
         GitSight
-      </span>
+      </button>
 
       {/* Modelo de IA e Idioma se configuran antes de abrir nada, así que van siempre. */}
       <div className="top-bar__selectors">
-        {active && (
+        {active && !showHome && (
           <>
           <label className="top-bar__select">
             <span className="top-bar__select-label">Tarea</span>
@@ -112,7 +112,7 @@ export default function TopBar() {
             </svg>
             <span>Modelo de IA</span>
           </button>
-        {active && (
+        {active && !showHome && (
           <button
             aria-label="Ver el recorrido guiado"
             className="top-bar__help"
@@ -125,7 +125,7 @@ export default function TopBar() {
         )}
       </div>
 
-      {active && (
+      {active && !showHome && (
         <span className="top-bar__date">
           {pendingUrl
             ? "Descargando repositorio…"

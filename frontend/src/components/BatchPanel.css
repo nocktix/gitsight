@@ -13,6 +13,7 @@
 .batch__task,
 .batch__count {
   margin: 0;
+  font-weight: 400;
   font-size: var(--text-sm);
   color: var(--color-text-muted);
 }

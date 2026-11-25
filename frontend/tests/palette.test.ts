@@ -78,6 +78,7 @@ const TEXT_PAIRS: [string, string][] = [
   ["--color-on-primary", "--color-primary"],
   ["--color-on-primary", "--color-primary-hover"],
   ["--color-on-primary-muted", "--color-primary"],
+  ["--color-primary-disabled-text", "--color-primary-disabled-bg"],
   ["--color-accent-on-primary", "--color-primary"],
   ["--color-info-text", "--color-info-bg"],
   ["--color-info-text", "--color-surface"],

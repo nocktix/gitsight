@@ -1,0 +1,130 @@
+.welcome-steps {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  row-gap: 8px;
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-sm);
+}
+
+.welcome-steps__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-muted);
+}
+
+/* Línea corta entre un paso y el siguiente. */
+.welcome-steps__item + .welcome-steps__item::before {
+  content: "";
+  width: 28px;
+  height: 2px;
+  margin: 0 12px 0 4px;
+  background: var(--color-border-strong);
+  opacity: 0.5;
+}
+
+@media (max-width: 720px) {
+  .welcome-steps {
+    flex-direction: column;
+    align-items: flex-start;
+    width: fit-content;
+    margin-inline: auto;
+  }
+
+  .welcome-steps__item + .welcome-steps__item::before {
+    display: none;
+  }
+}
+
+.welcome-steps__circle {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--color-border-strong);
+  border-radius: 50%;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.welcome-steps__text {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* El paso 2 es un botón real, pero se ve como enlace. */
+.welcome-steps__link {
+  padding: 2px 4px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  /* Un nombre de modelo largo se corta con «…» para que la fila de pasos no baje a medias. */
+  max-width: 280px;
+  white-space: nowrap;
+}
+
+.welcome-steps__link {
+  display: inline-block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.welcome-steps__warn {
+  margin-right: 6px;
+  vertical-align: -3px;
+}
+
+.welcome-steps__link:hover:not(:disabled) {
+  background: transparent;
+  text-decoration: underline;
+}
+
+.welcome-steps__item--current {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.welcome-steps__item--current .welcome-steps__circle {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.welcome-steps__item--done,
+.welcome-steps__item--success {
+  color: var(--color-text);
+}
+
+.welcome-steps__item--done .welcome-steps__circle,
+.welcome-steps__item--success .welcome-steps__circle {
+  border-color: var(--color-success-text);
+  background: var(--color-success-text);
+  color: var(--color-on-primary);
+}
+
+.welcome-steps__item--warning {
+  color: var(--color-discrepancy-text);
+  font-weight: 600;
+}
+
+.welcome-steps__item--warning .welcome-steps__circle {
+  border-color: var(--color-discrepancy-text);
+  color: var(--color-discrepancy-text);
+}
+
+.welcome-steps__item--warning .welcome-steps__link {
+  text-decoration: underline;
+}

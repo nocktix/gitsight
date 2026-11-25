@@ -22,7 +22,7 @@ import "./App.css";
 function AppContent() {
   const { selectedCommit, openCommit, closeCommit, viewer, closeViewer, setHighlighted } =
     useEvidence();
-  const { active, backendStatus } = useWorkspace();
+  const { active, backendStatus, showHome } = useWorkspace();
   const activeUrl = active?.url;
 
   // El commit seleccionado, el archivo abierto y el resaltado pertenecen al grupo anterior:
@@ -34,7 +34,7 @@ function AppContent() {
   }, [activeUrl, closeCommit, closeViewer, setHighlighted]);
 
   if (backendStatus !== "ready") return <BackendStatusScreen />;
-  if (!active) return <WelcomeScreen />;
+  if (!active || showHome) return <WelcomeScreen />;
 
   return (
     <div className="app">

@@ -1,6 +1,7 @@
 import { createContext, useContext } from "react";
 import type { ImportCounts } from "../api/dbClient";
 import type { CommitsData } from "../types/commits";
+import type { RecentGroup } from "../utils/recentGroups";
 import type { ParsedRepo } from "../utils/repoUrl";
 import type { StoredGroup, TaskData } from "../utils/storage";
 
@@ -13,6 +14,15 @@ export interface WorkspaceValue {
   /** Grupo abierto; null = pantalla de bienvenida. */
   active: ParsedRepo | null;
   commits: CommitsState;
+
+  /**
+   * Mostrar la pantalla de inicio aunque haya un grupo abierto. No borra nada (ni el último grupo,
+   * ni las tareas, ni los análisis, ni un lote en curso); se apaga al abrir cualquier grupo.
+   */
+  showHome: boolean;
+  goHome: () => void;
+  /** Grupos de todas las tareas guardadas, de la tarea más reciente hacia atrás (respaldo de los accesos rápidos). */
+  savedGroups: RecentGroup[];
 
   taskIds: string[];
   groups: StoredGroup[];

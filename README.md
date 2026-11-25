@@ -126,9 +126,10 @@ Abre <http://localhost:5173>.
 
 GitSight usa **tu propia cuenta** de un proveedor de IA. Se configura una vez desde la aplicación:
 botón **Modelo de IA** (engranaje) de la barra superior. El botón (y el selector **Idioma**) están
-**desde la pantalla de inicio**, antes de abrir cualquier repositorio. Bajo el formulario de inicio,
-una línea indica el estado: «Modelo de IA: sin configurar · **Configurar**» o, ya configurado,
-«Modelo de IA: OpenRouter · Automático · **Cambiar**»; ambos botones abren la misma ventana.
+**desde la pantalla de inicio**, antes de abrir cualquier repositorio. En el
+indicador de pasos de la pantalla de inicio, el paso 2 es un botón que muestra el estado: «⚠ 2 · Modelo de
+IA · **Configurar**» o, ya configurado, «✓ 2 · OpenRouter · Automático»; ambos abren la misma ventana, y
+también sirve para cambiar el modelo.
 
 ![Ventana para configurar el modelo de IA](docs/img/06-modelo-ia.png)
 
@@ -191,8 +192,21 @@ según el modelo que uses.
 
 ### 6.1 Abrir un repositorio
 
-Pega la dirección de GitHub del repositorio de un grupo (por ejemplo,
-`https://github.com/ORGANIZACION/tarea01-equipo1`) y pulsa **Cargar repositorio**.
+La pantalla de inicio muestra arriba tres pasos: **Elige qué revisar**, **el modelo de IA** (un botón que
+abre la configuración: con ⚠ y «Configura el modelo de IA» si falta, o con ✓ y «proveedor · modelo» si ya
+está listo) y **Analizar**. Debajo hay dos tarjetas que se abren al hacer clic (o con Enter/Espacio):
+**Un grupo** (viene abierta) y **Tarea completa**.
+
+En **Un grupo**, pega la dirección de GitHub del repositorio de un grupo (por ejemplo,
+`https://github.com/ORGANIZACION/tarea01-equipo1`). Mientras escribes, GitSight muestra la tarea y el grupo
+que dedujo («✓ Tarea: … · Grupo: …», y avisa si te pedirá confirmar la tarea); si la dirección no tiene la
+forma `https://github.com/organizacion/repositorio`, lo dice al salir del campo y el botón sigue
+desactivado. Pulsa **Cargar repositorio**.
+
+Bajo las tarjetas hay accesos rápidos: **Seguir donde quedaste** (hasta tres grupos abiertos hace poco) y
+**Probar con la demo**. Para volver a esta pantalla desde un grupo, haz clic en el logo **GitSight** de la
+barra superior: no se borra nada (ni el grupo, ni las tareas, ni los análisis) y un lote en curso sigue
+corriendo; los accesos rápidos te devuelven al grupo anterior.
 
 ![Pantalla de inicio](docs/img/02-bienvenida.png)
 
@@ -322,8 +336,10 @@ escanea la carpeta nueva.
    descomprimido; si cambia, lo descomprime de nuevo. Si un mismo repositorio aparece como carpeta y dentro
    de un `.zip`, usa la carpeta y avisa. Un `.zip` dañado se omite con un aviso.
 
-3. En la pantalla de inicio abre la pestaña **Tarea completa (carpeta)**, pega la ruta y pulsa
-   **Escanear carpeta**. Verás una tabla con cada grupo, sus commits y su estado.
+3. En la pantalla de inicio, en la tarjeta **Tarea completa**, pega la ruta y pulsa
+   **Escanear carpeta**. Al terminar, la pantalla baja sola hasta el resultado, que aparece bajo las dos
+   tarjetas: una tabla con cada grupo, sus commits y su estado. En el indicador de pasos, el primer paso queda
+   con ✓ y **Analizar** pasa a ser el actual.
 
    Justo después de escanear, antes de la tabla, aparece el bloque **Rúbrica de la tarea**:
 

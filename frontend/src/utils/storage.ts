@@ -8,6 +8,7 @@ import {
   putTask,
 } from "../api/dbClient.ts";
 import type { ImportCounts, ImportPayload, RubricVersionFull } from "../api/dbClient";
+import type { RecentGroup } from "./recentGroups";
 
 /**
  * Tareas, fechas, rúbricas (versionadas) y grupos viven en la base de datos del backend; las
@@ -26,6 +27,7 @@ import type { ImportCounts, ImportPayload, RubricVersionFull } from "../api/dbCl
 const TASK_PREFIX = "tid.task.";
 const TASKS_INDEX_KEY = "tid.tasks";
 const LAST_KEY = "tid.last";
+const RECENT_KEY = "tid.recent";
 
 export interface StoredGroup {
   url: string;
@@ -102,6 +104,18 @@ export function readLast(): LastOpened | null {
 
 export function writeLast(last: LastOpened): void {
   writeJson(LAST_KEY, last);
+}
+
+/** Grupos abiertos hace poco (accesos rápidos del inicio), el más reciente primero. */
+export function readRecent(): RecentGroup[] {
+  const list = readJson<RecentGroup[]>(RECENT_KEY);
+  return Array.isArray(list)
+    ? list.filter((g) => g && typeof g.taskId === "string" && typeof g.groupUrl === "string" && typeof g.name === "string")
+    : [];
+}
+
+export function writeRecent(list: RecentGroup[]): void {
+  writeJson(RECENT_KEY, list);
 }
 
 const MIGRATED_KEY = "tid.migrated.v1";
