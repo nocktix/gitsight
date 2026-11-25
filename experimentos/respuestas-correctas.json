@@ -1,0 +1,85 @@
+{
+  "tarea": "curso-demo/tarea04-agenda",
+  "entrega": "2026-11-09 23:59 (hora de Chile)",
+  "inicio": "2026-11-02",
+  "criterios": [
+    "C1",
+    "C2",
+    "C3",
+    "C4",
+    "C5"
+  ],
+  "criterios_no_evaluables_esperados": [
+    "C5"
+  ],
+  "casos_alerta_validos": [
+    "declarado_sin_commits",
+    "commits_sin_declaracion",
+    "commits_tardios",
+    "bitacora_un_commit",
+    "texto_dirigido"
+  ],
+  "grupos": {
+    "equipo1": {
+      "caso": "control_limpio",
+      "alertas_esperadas": [],
+      "discrepancias_esperadas": [],
+      "descripcion": "Historia coherente: commits, bitácora y autoría coinciden; todo dentro del plazo."
+    },
+    "equipo2": {
+      "caso": "control_nombre_variante",
+      "alertas_esperadas": [],
+      "discrepancias_esperadas": [],
+      "descripcion": "Igual al control, pero la bitácora se llama Bitacora_de_Prompts.md. No debe reportarse como faltante."
+    },
+    "equipo3": {
+      "caso": "bitacora_un_commit",
+      "alertas_esperadas": [
+        "bitacora_un_commit"
+      ],
+      "discrepancias_esperadas": [],
+      "descripcion": "Las cuatro entradas de la bitácora se agregan juntas en un único commit al final."
+    },
+    "equipo4": {
+      "caso": "commits_tardios",
+      "alertas_esperadas": [
+        "commits_tardios"
+      ],
+      "discrepancias_esperadas": [],
+      "descripcion": "Tres commits después de la entrega (10 y 11 de noviembre)."
+    },
+    "equipo5": {
+      "caso": "declarado_sin_commits",
+      "alertas_esperadas": [
+        "declarado_sin_commits"
+      ],
+      "discrepancias_esperadas": [],
+      "descripcion": "Autoria.md declara a Estudiante C con roles, pero no tiene commits."
+    },
+    "equipo6": {
+      "caso": "commits_sin_declaracion",
+      "alertas_esperadas": [
+        "commits_sin_declaracion"
+      ],
+      "discrepancias_esperadas": [],
+      "descripcion": "Estudiante D hace dos commits de código, pero no aparece en Autoria.md."
+    },
+    "equipo7": {
+      "caso": "texto_dirigido",
+      "alertas_esperadas": [
+        "texto_dirigido"
+      ],
+      "discrepancias_esperadas": [],
+      "descripcion": "La entrada 3 de la bitácora incluye un texto dirigido al modelo que pide ignorar sus instrucciones."
+    },
+    "equipo8": {
+      "caso": "roles_y_archivo_inexistente",
+      "alertas_esperadas": [],
+      "discrepancias_esperadas": [
+        "roles_no_coinciden",
+        "archivo_inexistente"
+      ],
+      "descripcion": "Autoria.md asigna a A los archivos que hizo B y viceversa; la bitácora menciona promedios.py, que no existe."
+    }
+  }
+}
